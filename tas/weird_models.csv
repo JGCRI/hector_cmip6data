@@ -1,0 +1,47 @@
+﻿model,size,units,calendar
+ACCESS-CM2_r1i1p1f1_1pctCO2          ,1800,hours since 0950-01-16T12:00:00.000000,proleptic_gregorian
+ACCESS-CM2_r1i1p1f1_abrupt-4xCO2,1800,hours since 0950-01-16T12:00:00.000000,proleptic_gregorian
+ACCESS-ESM1-5_r1i1p1f1_1pctCO2,1800,hours since 0101-01-16T12:00:00.000000,proleptic_gregorian
+ACCESS-ESM1-5_r1i1p1f1_abrupt-4xCO2,1800,hours since 0101-01-16T12:00:00.000000,proleptic_gregorian
+ACCESS-ESM1-5_r2i1p1f1_abrupt-4xCO2,12000,hours since 0101-01-16T12:00:00.000000,proleptic_gregorian
+CAMS-CSM1-0_r1i1p1f1_1pctCO2,1800,days since 3030-1-1T00:00,365_day
+CAMS-CSM1-0_r1i1p1f1_abrupt-4xCO2  ,1800,days since 3030-1-1T00:00,365_day
+CAMS-CSM1-0_r2i1p1f1_1pctCO2,1800,days since 3035-1-1T00:00,365_day
+CAMS-CSM1-0_r2i1p1f1_abrupt-4xCO2,1800,days since 3035-1-1T00:00,365_day
+CAS-ESM2-0_r1i1p1f1_1pctCO2,1812,hours since 0200-01-16T12:00:00.000000,noleap
+CAS-ESM2-0_r1i1p1f1_abrupt-4xCO2,2004,hours since 0001-01-16T12:00:00.000000,noleap
+CESM2-FV2_r1i1p1f1_1pctCO2    ,1800,hours since 0001-01-15T12:00:00.000000,noleap
+CESM2-FV2_r1i1p1f1_abrupt-4xCO2,1800,hours since 0001-01-15T12:00:00.000000,noleap
+CESM2-WACCM-FV2_r1i1p1f1_1pctCO2    ,1800,hours since 0001-01-15T12:00:00.000000,noleap
+CESM2-WACCM-FV2_r1i1p1f1_abrupt-4xCO2,1800,hours since 0001-01-15T12:00:00.000000,noleap
+CESM2-WACCM_r1i1p1f1_1pctCO2 ,1800,hours since 0001-01-15T12:00:00.000000,noleap
+CESM2-WACCM_r1i1p1f1_abrupt-4xCO2,1800,hours since 0001-01-15T12:00:00.000000,noleap
+CESM2_r1i1p1f1_1pctCO2          ,1800,hours since 0001-01-15T12:00:00.000000,noleap
+CESM2_r1i1p1f1_abrupt-2xCO2,1800,hours since 0001-01-15T12:00:00.000000,noleap
+CESM2_r1i1p1f1_abrupt-4xCO2,11988,hours since 0001-01-15T12:00:00.000000,noleap
+FGOALS-g3_r1i1p1f1_1pctCO2,1884,hours since 0370-01-16T12:00:00.000000,noleap
+FGOALS-g3_r1i1p1f1_abrupt-4xCO2,1824,hours since 0463-01-16T12:00:00.000000,noleap
+FGOALS-g3_r2i1p1f1_1pctCO2,1800,hours since 0300-01-16T12:00:00.000000,noleap
+FGOALS-g3_r3i1p1f1_1pctCO2,2172,hours since 0699-01-16T12:00:00.000000,noleap
+FIO-ESM-2-0_r1i1p1f1_1pctCO2      ,1800,hours since 0001-01-16T12:00:00.000000,noleap
+FIO-ESM-2-0_r1i1p1f1_abrupt-4xCO2,1800,hours since 0001-01-16T12:00:00.000000,noleap
+FIO-ESM-2-0_r2i1p1f1_1pctCO2,1800,hours since 0001-01-16T12:00:00.000000,noleap
+FIO-ESM-2-0_r2i1p1f1_abrupt-4xCO2,1800,hours since 0001-01-16T12:00:00.000000,noleap
+FIO-ESM-2-0_r3i1p1f1_1pctCO2        ,1800,hours since 0001-01-16T12:00:00.000000,noleap
+FIO-ESM-2-0_r3i1p1f1_abrupt-4xCO2,1800,hours since 0001-01-16T12:00:00.000000,noleap
+GISS-E2-1-G_r1i1p1f3_abrupt-4xCO2,1200,hours since 2900-01-16T12:00:00.000000,noleap
+GISS-E2-1-G_r2i1p1f2_ssp126,5832,hours since 2015-01-16T12:00:00,noleap
+GISS-E2-1-G_r3i1p1f2_ssp126      ,5832,hours since 2015-01-16T12:00:00,noleap
+GISS-E2-1-G_r4i1p1f2_ssp126,5832,hours since 2015-01-16T12:00:00,noleap
+GISS-E2-1-G_r5i1p1f2_ssp126       ,5832,hours since 2015-01-16T12:00:00,noleap
+MIROC6_r1i1p1f1_1pctCO2 ,1800,hours since 3200-01-16T12:00:00.000000,gregorian
+MIROC6_r1i1p1f1_abrupt-2xCO2,3000,hours since 3200-01-16T12:00:00.000000,gregorian
+MIROC6_r1i1p1f1_abrupt-4xCO2,3000,hours since 3200-01-16T12:00:00.000000,gregorian
+NorCPM1_r1i1p1f1_1pctCO2,1968,hours since 0001-01-16T12:00:00.000000,noleap
+NorCPM1_r1i1p1f1_abrupt-4xCO2,1800,hours since 0001-01-16T12:00:00.000000,noleap
+NorESM2-LM_r1i1p1f1_1pctCO2,1800,hours since 0001-01-16T12:00:00.000000,noleap
+NorESM2-LM_r1i1p1f1_abrupt-4xCO2,6000,hours since 0001-01-16T12:00:00.000000,noleap
+NorESM2-MM_r1i1p1f1_1pctCO2    ,1800,hours since 0001-01-16T12:00:00.000000,noleap
+NorESM2-MM_r1i1p1f1_abrupt-4xCO2,1800,hours since 0001-01-16T12:00:00.000000,noleap
+TaiESM1_r1i1p1f1_1pctCO2        ,1800,hours since 0001-01-16T12:00:00.000000,noleap
+TaiESM1_r1i1p1f1_abrupt-4xCO2,1800,hours since 0001-01-16T12:00:00.000000,noleap

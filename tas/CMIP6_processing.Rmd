@@ -1,0 +1,123 @@
+---
+title: "CMIP6 processing"
+author: "Leeya Pressburger"
+date: "12/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Intro/summary
+
+So far, thanks to helper functions from Abigail and Kalyn, I have been able to extract near-surface air temperature (`tas`) data for CMIP6 model runs using Pangeo. The values plotted below are global annual averages. For the models with historical runs, I have calculated the historical averages, but have not yet subtracted to get `Tgav`. 
+
+I have net CDF files as well as .csvs for each model, ensemble, and experiment. 
+
+I read the data from the .csvs into R and ran into an issue. Some of the model runs have a different convention for numbering years/time in general. I went into each problematic run's net CDF to look at the documentation and created a csv with information on the model, number of time points, units, and type of calendar. 
+
+(Note that one other issue I ran into is that none of the MCM-UA-1-0 model runs (6 total) were processed by Pangeo. They returned an error about expected NANs and missing values.) 
+
+Below are the problematic models (46 model-ensemble-experiment total).
+
+```{r get_data, include = FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(kableExtra)
+
+# Read in csv files
+mypath = "C:/Users/pres520/PycharmProjects/pangeo/test"
+files <- list.files(path = mypath, pattern = "*.csv", full.names = TRUE)
+
+# Remove non-model run - "/pangeo_table.csv"
+nums <- c(1:956, 958:1045)
+files <- files[nums]
+
+# Read in data, forcing column types
+data <- lapply(files, read_csv, col_types = "dccccccdd") %>%
+  bind_rows(.id = "File")
+
+# Add name identifier
+data$name <- paste0(data$model, "_", data$ensemble, "_", data$experiment)
+
+# Non-conventional year numbering - isolate for now
+weird_range <- data %>% filter(year < 1850 | year > 2300)
+weird_models <- unique(weird_range$name)
+
+path <- "C:/Users/pres520/Documents/GitHub/CMIP6/weird_models.csv"
+weird <- read_csv(path)
+```
+
+### Non-conventional notation models
+
+``` {r weird_models, echo=FALSE}
+weird %>% 
+  kable %>%
+  kable_styling("striped", full_width = F) %>% 
+  scroll_box(height = "400px")
+```
+
+### Plots
+
+For now, here's what the data looks like. The first plot is all of the data, and the last three are broken up by experiment (just abrupt CO~2~, just historical, and just the SSPs).
+
+```{r plots, echo=FALSE, fig.height = 12, fig.width = 15}
+# Normal years (1850-2100)
+normal_range <- data %>% filter(year > 1849 & year < 2300)
+
+normal_range %>% 
+  ggplot(aes(year, value, color = model, group = paste(model, experiment, ensemble))) +
+  geom_line() +
+  facet_wrap(~experiment, scales = "free") +
+  labs(x = "Year",
+       y = "tas",
+       title = "CMIP6 runs - tas over time") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 22))
+
+# Break down further by experiment
+co2exp <- normal_range %>% filter(experiment %in% c("1pctCO2", "abrupt-2xCO2", "abrupt-4xCO2"))
+hist <- normal_range %>% filter(experiment == "historical")
+ssps <- normal_range %>% filter(experiment %in% c("ssp119", "ssp126", "ssp245", "ssp370", "ssp434", "ssp460", "ssp534-over", "ssp585"))
+
+co2exp %>%
+  ggplot(aes(year, value, color = experiment, group = paste(model, experiment, ensemble))) +
+  geom_line() +
+  labs(x = "Year",
+       y = "tas",
+       title = "CO2 experiments only - tas over time") +
+  facet_wrap(~model) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 22))
+
+hist %>%
+  ggplot(aes(year, value, color = model, group = paste(model, experiment, ensemble))) +
+  geom_line() +
+  labs(x = "Year",
+       y = "tas",
+       title = "Historical tas") +
+  facet_wrap(~model) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 22))
+
+ssps %>%
+  ggplot(aes(year, value, color = model, group = paste(model, experiment, ensemble))) +
+  geom_line() +
+  labs(x = "Year",
+       y = "tas",
+       title = "CMIP6 SSP runs - tas over time") +
+  facet_wrap(~experiment, scales = "free") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 22))
+
+```
+
+### Questions
+
+For next steps:  
+[1] Any comments/questions/changes you'd like to see made?  
+[2] How should I edit the problematic models to get the year data into a workable format? (This is the first time I'm seeing these different notations and am not sure how to convert)    
+[3] What needs to be done before opening a PR for `hectordata`?  
+[4] What variables are most important to extract next, and do they require any additional processing?  
