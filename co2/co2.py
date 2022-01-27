@@ -132,11 +132,11 @@ address_all = address_all.reset_index(drop = True)
 # address_119 = address_118[135:2630]
 
 # These are the files that don't work - except now 55-74 aren't working
-nums = [11, 12, 55]
+nums = [11, 12, 62]
 address_wrong = address_all[nums]
 
 # Process data
-for items in address_all[56:74]:
+for items in address_all[63:74]:
     # Get from cloud
     x = fetch_nc(items)
     # Get global mean - monthly data - coarsen to annual
