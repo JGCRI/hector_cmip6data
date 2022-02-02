@@ -1,0 +1,11 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,rsds,abrupt-4xCO2,W m-2,monC,r1i1p1f1,GFDL-CM4,0001,201.03847
+1,rsds,abrupt-4xCO2,W m-2,monC,r1i1p1f1,GFDL-CM4,0002,200.34412
+2,rsds,abrupt-4xCO2,W m-2,monC,r1i1p1f1,GFDL-CM4,0003,198.71074
+3,rsds,abrupt-4xCO2,W m-2,monC,r1i1p1f1,GFDL-CM4,0004,197.48909
+4,rsds,abrupt-4xCO2,W m-2,monC,r1i1p1f1,GFDL-CM4,0005,197.79225
+5,rsds,abrupt-4xCO2,W m-2,monC,r1i1p1f1,GFDL-CM4,0006,198.75531
+6,rsds,abrupt-4xCO2,W m-2,monC,r1i1p1f1,GFDL-CM4,0007,196.91638
+7,rsds,abrupt-4xCO2,W m-2,monC,r1i1p1f1,GFDL-CM4,0008,197.22931
+8,rsds,abrupt-4xCO2,W m-2,monC,r1i1p1f1,GFDL-CM4,0009,197.95471
+9,rsds,abrupt-4xCO2,W m-2,monC,r1i1p1f1,GFDL-CM4,0010,197.45123
