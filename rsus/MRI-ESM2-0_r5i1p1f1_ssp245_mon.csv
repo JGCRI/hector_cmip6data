@@ -1,0 +1,17 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2015,13.335811
+1,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2016,13.192329
+2,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2017,13.11568
+3,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2018,13.225681
+4,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2019,13.122371
+5,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2020,13.142208
+6,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2021,13.076355
+7,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2022,13.226428
+8,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2023,13.231767
+9,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2024,13.254906
+10,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2025,13.091019
+11,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2026,13.148511
+12,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2027,13.175183
+13,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2028,13.09689
+14,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2029,12.945149
+15,rsus,ssp245,W m-2,mon,r5i1p1f1,MRI-ESM2-0,2030,13.092183

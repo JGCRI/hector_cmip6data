@@ -1,0 +1,7 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,rsus,ssp245,W m-2,mon,r9i1p1f2,CNRM-CM6-1,2015,12.867658
+1,rsus,ssp245,W m-2,mon,r9i1p1f2,CNRM-CM6-1,2016,12.795708
+2,rsus,ssp245,W m-2,mon,r9i1p1f2,CNRM-CM6-1,2017,12.813371
+3,rsus,ssp245,W m-2,mon,r9i1p1f2,CNRM-CM6-1,2018,12.761166
+4,rsus,ssp245,W m-2,mon,r9i1p1f2,CNRM-CM6-1,2019,12.701896
+5,rsus,ssp245,W m-2,mon,r9i1p1f2,CNRM-CM6-1,2020,12.721855

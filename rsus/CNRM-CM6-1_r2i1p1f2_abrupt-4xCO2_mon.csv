@@ -1,0 +1,10 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,rsus,abrupt-4xCO2,W m-2,mon,r2i1p1f2,CNRM-CM6-1,1850,13.089375
+1,rsus,abrupt-4xCO2,W m-2,mon,r2i1p1f2,CNRM-CM6-1,1851,12.935811
+2,rsus,abrupt-4xCO2,W m-2,mon,r2i1p1f2,CNRM-CM6-1,1852,12.743472
+3,rsus,abrupt-4xCO2,W m-2,mon,r2i1p1f2,CNRM-CM6-1,1853,12.515972
+4,rsus,abrupt-4xCO2,W m-2,mon,r2i1p1f2,CNRM-CM6-1,1854,12.445699
+5,rsus,abrupt-4xCO2,W m-2,mon,r2i1p1f2,CNRM-CM6-1,1855,12.353679
+6,rsus,abrupt-4xCO2,W m-2,mon,r2i1p1f2,CNRM-CM6-1,1856,12.361838
+7,rsus,abrupt-4xCO2,W m-2,mon,r2i1p1f2,CNRM-CM6-1,1857,12.263622
+8,rsus,abrupt-4xCO2,W m-2,mon,r2i1p1f2,CNRM-CM6-1,1858,12.249303
