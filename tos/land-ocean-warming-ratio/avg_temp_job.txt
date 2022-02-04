@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#SBATCH -A IHESD
+#SBATCH -t 05:00:00
+#SBATCH -N 1
+
+#SBATCH -n 3
+#SBATCH -J averageAnnualTemps
+
+source /etc/profile.d/modules.sh >& /dev/null
+
+module load R/3.4.3
+Rscript /pic/projects/GCAM/Gering/land-ocean-warming-ratio/avg_temp_script.R
+
