@@ -1,0 +1,26 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2015,121.29069
+1,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2016,122.69265
+2,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2017,121.61346
+3,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2018,120.9531
+4,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2019,120.687325
+5,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2020,121.29751
+6,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2021,121.75848
+7,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2022,122.97147
+8,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2023,121.273796
+9,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2024,120.34549
+10,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2025,120.40661
+11,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2026,123.692024
+12,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2027,121.92599
+13,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2028,120.59719
+14,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2029,121.31144
+15,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2030,121.50585
+16,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2031,122.86798
+17,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2032,121.443504
+18,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2033,121.159584
+19,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2034,122.31781
+20,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2035,122.76385
+21,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2036,121.66454
+22,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2037,121.502144
+23,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2038,121.55489
+24,hfls,ssp245,W m-2,mon,r20i1p1f1,MIROC6,2039,122.9739

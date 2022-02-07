@@ -129,7 +129,7 @@ for items in address_all:
     x = fetch_nc(items)
     # Get global mean - monthly data - coarsen to annual
     globalmean = global_mean(x)
-    annual_mean = globalmean.coarsen(time=12).mean()
+    annual_mean1 = globalmean.coarsen(time=12).mean()
     # Get data information
     meta = get_ds_meta(x)
     # Get date information
