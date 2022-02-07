@@ -1,0 +1,6 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,rlds,ssp245,W m-2,mon,r5i1p5f2,GISS-E2-1-G,2020,383.58292
+1,rlds,ssp245,W m-2,mon,r5i1p5f2,GISS-E2-1-G,2021,383.12735
+2,rlds,ssp245,W m-2,mon,r5i1p5f2,GISS-E2-1-G,2022,381.41788
+3,rlds,ssp245,W m-2,mon,r5i1p5f2,GISS-E2-1-G,2023,380.79996
+4,rlds,ssp245,W m-2,mon,r5i1p5f2,GISS-E2-1-G,2024,381.48624
