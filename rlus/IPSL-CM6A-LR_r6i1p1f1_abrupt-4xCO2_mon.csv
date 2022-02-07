@@ -1,0 +1,6 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,rlus,abrupt-4xCO2,W m-2,mon,r6i1p1f1,IPSL-CM6A-LR,1850,422.6274
+1,rlus,abrupt-4xCO2,W m-2,mon,r6i1p1f1,IPSL-CM6A-LR,1851,426.94174
+2,rlus,abrupt-4xCO2,W m-2,mon,r6i1p1f1,IPSL-CM6A-LR,1852,429.34155
+3,rlus,abrupt-4xCO2,W m-2,mon,r6i1p1f1,IPSL-CM6A-LR,1853,430.2312
+4,rlus,abrupt-4xCO2,W m-2,mon,r6i1p1f1,IPSL-CM6A-LR,1854,432.17136
