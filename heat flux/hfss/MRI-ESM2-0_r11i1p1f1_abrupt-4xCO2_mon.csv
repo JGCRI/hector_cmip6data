@@ -1,0 +1,7 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,hfss,abrupt-4xCO2,W m-2,mon,r11i1p1f1,MRI-ESM2-0,1850,16.774828
+1,hfss,abrupt-4xCO2,W m-2,mon,r11i1p1f1,MRI-ESM2-0,1851,14.977904
+2,hfss,abrupt-4xCO2,W m-2,mon,r11i1p1f1,MRI-ESM2-0,1852,14.579567
+3,hfss,abrupt-4xCO2,W m-2,mon,r11i1p1f1,MRI-ESM2-0,1853,14.369846
+4,hfss,abrupt-4xCO2,W m-2,mon,r11i1p1f1,MRI-ESM2-0,1854,14.478333
+5,hfss,abrupt-4xCO2,W m-2,mon,r11i1p1f1,MRI-ESM2-0,1855,14.183337
