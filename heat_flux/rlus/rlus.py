@@ -59,6 +59,27 @@ def get_ds_meta(ds):
 # Define the functions that are useful for working with the pangeo data base
 # see https://pangeo.io/index.html for more details.
 
+def fetch_pangeo_table():
+    """ Get a copy of the pangeo archive contents
+    :return: a pd data frame containing information about the model, source, experiment, ensemble and
+    so on that is available for download on pangeo.
+    """
+
+    # The url path that contains to the pangeo archive table of contents.
+    url = "https://storage.googleapis.com/cmip6/pangeo-cmip6.json"
+    out = intake.open_esm_datastore(url)
+
+    return out.df
+
+def fetch_nc(zstore):
+    """Extract data for a single file.
+    :param zstore:                str of the location of the cmip6 data file on pangeo.
+    :return:                      an xarray containing cmip6 data downloaded from the pangeo.
+    """
+    ds = xr.open_zarr(fsspec.get_mapper(zstore))
+    ds.sortby('time')
+    return ds
+
 def combine_df(df1, df2):
     """ Join the data frames together.
     :param df1:   pandas data frame 1.
@@ -104,7 +125,7 @@ def mean_heatflux(path):
     # Extract the meta data
     meta_data = get_ds_meta(ds)
 
-    # Based on the meta data find the correct areacella file and sftlf file
+    # Based on the meta data find the correct areacella file
     df = pd.read_csv('https://storage.googleapis.com/cmip6/cmip6-zarr-consolidated-stores.csv')
     query1 = "variable_id == 'areacella' & source_id == '" + meta_data.model[0] + "'"
     query2 = "variable_id == 'sftlf' & source_id == '" + meta_data.model[0] + "'"
@@ -120,6 +141,7 @@ def mean_heatflux(path):
     ds_landper = xr.open_zarr(fsspec.get_mapper(df_landper.zstore.values[0]), consolidated=True)
 
     # Select only the ocean cell area values in the HL regions, use this mask as the area weights.
+    ### CHANGE THIS
     # (1 * mask) replaces T/F with 0 and 1
     mask = 1 * (ds_area['areacella'] * (1 - (0.01 * ds_landper['sftlf'])))
     # Replace 0 and 1 with NA
@@ -149,38 +171,46 @@ def mean_heatflux(path):
     # x.to_netcdf(name + ".nc")
     out.to_csv(name + ".csv", header=True, index=True)
 
-address_rlus = pd.read_csv("rlus_addresses.csv")
+address_rlus = pd.read_csv("./rlus/rlus_addresses.csv")
 address_rlus= address_rlus["x"]
 
-address_skips = address_rlus.drop(skips).reset_index(drop=True)
+address_skips = address_rlus.drop(skips)
+address_index = address_skips.reset_index(drop=True)
 
-for items in address_skips:
+for items in address_index[699:931]:
     mean_heatflux(items)
 
-# Check numbers but models are accurate
 skips = [#BCC-CSM2-MR
         36, 37, 43, 44, 45, 90, 91, 92, 93, 158,
         # AWI-CM-1-1-MR
-        479, 480, 481, 482, 484, 485, 486, 487, 687, 688,
+        469, 479, 480, 481, 482, 484, 485, 486, 688, 689,
         # NUIST/NESM3
         527, 528, 607, 608, 609, 610, 611, 612,
         # NorESM2-LM
-        625, 697, 698, 699, 704, 710, 713, 714, 716,
-        
-        678, 679, 680, 681, 682, 684, 685, 686, 687, 688, 689, 690, 691, 692, 698, 699, 700, 721, 722, 746, 747, 748, 749, 750, 751,
-        757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 771, 772, 774,
+        625, 698, 699, 700, 705, 712, 714, 715, 717,
         # FGOALS-g3
-        908, 909, 910, 1018,
+        628, 629, 630, 757, 758, 759, 760, 761, 762, 763,
+        764, 765, 766, 767, 768, 769, 771, 772, 774,
+        887, 910, 911, 912, 1019,
+        # FGOALS-f3-L
+        684, 685, 686, 687, 690, 691, 692,
+        # KACE-1-0-G
+        678, 679, 680, 681, 682, 746, 747, 748, 749, 750, 751,
+        # GISS-E2-2-G
+        721, 722,
         # CCCR-IITM
-        753, 1010, 1011, 1012,
+        698, 754, 1010, 1011, 1012,
         # EC-Earth3, EC-Earth3-Veg - not enough values to unpack
-        859, 868, 872, 873, 874, 876, 878, 1039, 1044,
+        639, 640, 860, 869, 873, 874, 875, 876, 879, 998, 1039, 1044,
         # THU/CIESM
-        997, 998, 999, 1000, 1001,
+        999, 1000, 1001, 1002, 1003,
         # CAS-ESM2-0
-        1005, 1006,
+        944, 886,
         # FIO-ESM-2-0
         1007, 1008, 1009, 1013, 1014, 1015, 1016, 1017,
-        1019, 1020, 1021, 1022, 1023, 1024, 1025]
+        1018, 1020, 1021, 1022, 1023, 1024, 1025]
 
-session_info.show()
+
+nums = [678, 679, 680, 681, 682, 684, 685, 686, 687, 688, 689, 690, 691, 692, 698, 699,
+        700, 721, 722, 746, 747, 748, 749, 750, 751,
+        757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 771, 772, 774]
