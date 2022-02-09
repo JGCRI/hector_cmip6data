@@ -1,0 +1,129 @@
+---
+title: "TOS HL, LL, & Global for Hector"
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: '4'
+    toc_float: yes
+    number_sections: true
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+# Set Up 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = FALSE, message = FALSE, warning = FALSE)
+# see https://bookdown.org/yihui/rmarkdown-cookbook/ for more info on markdowns
+```
+
+```{r}
+library(data.table)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+DIR <- here::here("tos", "HL_LL_global")
+
+dfile <- file.path(DIR, "HL_LL_global_tos.csv")
+if (!file.exists(dfile)){ stop("missing ", dfile, " must run 1.postprocessing.R")}
+
+data <- read.csv(dfile, stringsAsFactors = FALSE)
+
+theme_set(theme_bw())
+```
+
+## Objective 
+
+Take a look at tos data processed from pangeo, note that we've only processed a fraction of the historical data from 1850 to 1900. 
+
+
+# TOS data 
+
+```{r}
+data %>%
+    ggplot(aes(year, value, color = model)) +
+    geom_point(alpha = 0.5) +
+    facet_wrap("area", scales = "free") +
+    theme_bw() +
+    theme(legend.position = "none") +
+    labs(title = "TOS data")
+```
+
+
+```{r}
+# First calculate the mean value for the models over the ensembles
+data %>%
+    group_by(year, model, area) %>%
+    summarise(value = mean(value)) %>%
+    ungroup ->
+    model_ensemble_mean
+
+model_ensemble_mean %>%
+    ggplot(aes(year, value, color = model)) +
+    geom_point(alpha = 0.5) +
+    facet_wrap("area", scales = "free") +
+    theme_bw() +
+    theme(legend.position = "none") +
+    labs(title = "Model Mean")
+```
+
+
+```{r}
+# Get the PI mean defined as 1850 - 1860
+model_ensemble_mean %>%
+    filter(year %in% 1850:1860) %>%
+    group_by(model, area) %>%
+    summarise(value = mean(value)) %>%
+    ungroup ->
+    model_means
+
+# Calculate the multi-model average.
+model_means %>%
+    group_by(area) %>%
+    summarise(mean = mean(value),
+              min = min(value),
+              max = max(value),
+              sd = sd(value)) ->
+    tos_values
+```
+
+
+```{r}
+model_means %>%
+    ggplot(aes(area, value, color = model)) +
+    geom_point(alpha = 0.5, position = "jitter") +
+    geom_point(data = tos_values, aes(area, mean), color = "black", size = 2, alpha = 0.7) +
+    theme_bw() +
+    theme(legend.position = "none") +
+    labs(title = "Model Averages", y = "deg C", x = NULL)
+```
+## New data vs Hector data
+
+```{r}
+tos_values %>%
+    filter(area == "global") %>%
+    pull(mean) ->
+    GLOBAL_TOS_MEAN
+
+tos_values %>%
+    filter(area != "global") %>%
+    select(area, mean) %>%
+    mutate(delta_T = mean - GLOBAL_TOS_MEAN) %>%
+    select(area, delta_T) ->
+    delta_T
+
+data.frame(area = tos_values$area,
+           variable = c("global tos mean", "delta T", "delta T"),
+           value = c(GLOBAL_TOS_MEAN, delta_T$delta_T)) ->
+    hector_data
+
+hector_data$old_values <- c(15, -13.0, 7.0)
+
+hector_data
+```
+
+
+```{r}
+ofile <- file.path(here::here("tos", "HL_LL_global"), 'HL_LL_global_tos.csv')
+write.csv(data, file = ofile, row.names = FALSE)
+```
+
