@@ -59,27 +59,6 @@ def get_ds_meta(ds):
 # Define the functions that are useful for working with the pangeo data base
 # see https://pangeo.io/index.html for more details.
 
-def fetch_pangeo_table():
-    """ Get a copy of the pangeo archive contents
-    :return: a pd data frame containing information about the model, source, experiment, ensemble and
-    so on that is available for download on pangeo.
-    """
-
-    # The url path that contains to the pangeo archive table of contents.
-    url = "https://storage.googleapis.com/cmip6/pangeo-cmip6.json"
-    out = intake.open_esm_datastore(url)
-
-    return out.df
-
-def fetch_nc(zstore):
-    """Extract data for a single file.
-    :param zstore:                str of the location of the cmip6 data file on pangeo.
-    :return:                      an xarray containing cmip6 data downloaded from the pangeo.
-    """
-    ds = xr.open_zarr(fsspec.get_mapper(zstore))
-    ds.sortby('time')
-    return ds
-
 def combine_df(df1, df2):
     """ Join the data frames together.
     :param df1:   pandas data frame 1.
@@ -125,7 +104,7 @@ def mean_heatflux(path):
     # Extract the meta data
     meta_data = get_ds_meta(ds)
 
-    # Based on the meta data find the correct areacella file
+    # Based on the meta data find the correct areacella file and sftlf file
     df = pd.read_csv('https://storage.googleapis.com/cmip6/cmip6-zarr-consolidated-stores.csv')
     query1 = "variable_id == 'areacella' & source_id == '" + meta_data.model[0] + "'"
     query2 = "variable_id == 'sftlf' & source_id == '" + meta_data.model[0] + "'"
@@ -141,7 +120,6 @@ def mean_heatflux(path):
     ds_landper = xr.open_zarr(fsspec.get_mapper(df_landper.zstore.values[0]), consolidated=True)
 
     # Select only the ocean cell area values in the HL regions, use this mask as the area weights.
-    ### CHANGE THIS
     # (1 * mask) replaces T/F with 0 and 1
     mask = 1 * (ds_area['areacella'] * (1 - (0.01 * ds_landper['sftlf'])))
     # Replace 0 and 1 with NA
@@ -173,12 +151,6 @@ def mean_heatflux(path):
 
 address_rlds = pd.read_csv("rlds_addresses.csv")
 address_rlds= address_rlds["x"]
-
-address_skips = address_rlds.drop(skips).reset_index(drop=True)
-
-for items in address_skips[824:936]:
-    mean_heatflux(items)
-
 
 skips = [#BCC-CSM2-MR
         36, 37, 43, 44, 45, 90, 91, 92, 93, 158,
@@ -212,3 +184,10 @@ skips = [#BCC-CSM2-MR
         # FIO-ESM-2-0
         1007, 1008, 1009, 1013, 1014, 1015, 1016, 1017,
         1018, 1020, 1021, 1022, 1023, 1024, 1025]
+
+address_skips = address_rlds.drop(skips).reset_index(drop=True)
+
+for items in address_skips:
+    mean_heatflux(items)
+
+session_info.show()
