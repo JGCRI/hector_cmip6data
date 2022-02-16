@@ -2,13 +2,14 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-library(ncdf4)
 library(here)
 
 BASE_DIR <- here::here()
 
+# Variables of interest
 vars <- c("hfls", "hfss", "rlds", "rlus", "rsds", "rsus")
 
+# Function to get lists of file paths for each of the six variables
 get_path <- function(var){
   assign(x = paste0("path_", var), 
          value = file.path(BASE_DIR, "heat_flux", var))
@@ -17,6 +18,7 @@ get_path <- function(var){
 paths <- lapply(vars, get_path)
 paths <- c(paths[[1]], paths[[2]], paths[[3]], paths[[4]], paths[[5]], paths[[6]])
 
+# Function to list the files for each path specified
 list_files <- function(path){
   list.files(path = path, pattern = "*.csv", full.names = TRUE)
 }
@@ -26,11 +28,13 @@ files <- lapply(paths, list_files)
 # Read in data, forcing column types
 output <- list()
 
+# For each file in each file path for each varible, read in the csv data
 for(num in 1:length(files)){
   output[[num]] <- lapply(files[[num]], read_csv, col_types = "dccccccdd") %>%
     bind_rows(.id = "File")
 }
 
+# Create data frame
 output <- bind_rows(output)
 
 # Add name and row number identifiers
@@ -56,19 +60,19 @@ new_output <- left_join(output, output1, by = "rownum")
 # Need to get common names across six variables
 names <- unique(new_output$name)
 
+# How many model/experiment/ensemble combinations are there for each variable?
 group_by_var <- new_output %>%
   group_by(variable) %>%
   summarize(names = unique(name)) %>%
   mutate(count = length(names))
 
-counts <- unique(group_by_var$count)
+counts <- group_by_var %>% summarize(variable, count) %>% unique()
 
 # Which variables have the most and least names?
-most_names <- group_by_var %>% filter(variable == "hfls")
-least_names <- group_by_var %>% filter(variable == "rlds")
+most_names <- group_by_var %>% filter(variable == "rsds")
+least_names <- group_by_var %>% filter(variable == "hfls")
 
 # Extract common names and names that are missing
-### TO DO - make sure all names are the same for all variables
 common_names <- left_join(most_names, least_names, by = "names")
 common_names <- drop_na(common_names)
 good_names <- common_names$names
@@ -80,32 +84,37 @@ bad_names <- bad_names[1:8]
 
 # Reorganize data frame
 data <- new_output %>%
+  # Remove pesky NA variable
   filter(variable != "NA") %>%
   # Remove missing names
   filter(!name %in% bad_names) %>%
+  # Organize
   select(-c("X1", "x", "File.x", "File.y")) %>%
   relocate(c("rownum", "name"), .before = "variable")
 
-### make sure this works
 # Problem - need to make one year column with "year" and "new_year"
 # If new_year has an NA, replace it with year, otherwise leave as is
 replace_year <- ifelse(is.na(data$new_year), 
                 data$year, 
                 data$new_year)
 data$year <- replace_year
+# Get rid of new_year column
 data <- data %>% select(-new_year)
 
-### TO DO
 # Heat flux equation
 # rsds - rsus + rlds - rlus - hfss - hfls
-# For each name and year, manipulate values of these data sets
 
-rsds <- data %>% filter(variable == "rsds")
-rsus <- data %>% filter(variable == "rsus")
-rlds <- data %>% filter(variable == "rlds")
-rlus <- data %>% filter(variable == "rlus")         
-hfss <- data %>% filter(variable == "hfss")
-hfls <- data %>% filter(variable == "hfls")
+heat_flux <- data %>% select(c(name, year, variable, value))
 
-test <- data %>% select(c(name, variable, year, value))
+heat_flux <- heat_flux %>%
+  pivot_wider(names_from = variable, values_from = value)
 
+hf_output <- list()
+for(n in seq_len(nrow(heat_flux))){
+  hf_output[[n]] <- heat_flux$rsds[[n]] - heat_flux$rsus[[n]] + 
+    heat_flux$rlds[[n]] - heat_flux$rlus[[n]] - 
+    heat_flux$hfss[[n]] - heat_flux$hfls[[n]]
+}
+
+heat_flux <- heat_flux %>%
+  mutate(equation = hf_output)
