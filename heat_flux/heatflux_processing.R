@@ -28,7 +28,7 @@ files <- lapply(paths, list_files)
 # Read in data, forcing column types
 output <- list()
 
-# For each file in each file path for each varible, read in the csv data
+# For each file in each file path for each variable, read in the csv data
 for(num in 1:length(files)){
   output[[num]] <- lapply(files[[num]], read_csv, col_types = "dccccccdd") %>%
     bind_rows(.id = "File")
@@ -70,24 +70,29 @@ counts <- group_by_var %>% summarize(variable, count) %>% unique()
 
 # Which variables have the most and least names?
 most_names <- group_by_var %>% filter(variable == "rsds")
-least_names <- group_by_var %>% filter(variable == "hfls")
+hfls_names <- group_by_var %>% filter(variable == "hfls")
+hfss_names <- group_by_var %>% filter(variable == "hfss")
+rlds_names <- group_by_var %>% filter(variable == "rlds")
+rlus_names <- group_by_var %>% filter(variable == "rlus")
+rsus_names <- group_by_var %>% filter(variable == "rsus")
 
 # Extract common names and names that are missing
-common_names <- left_join(most_names, least_names, by = "names")
+common_names <- left_join(most_names, hfls_names, by = "names")
+common_names <- left_join(common_names, hfss_names, by = "names")
+common_names <- left_join(common_names, rlds_names, by = "names")
+common_names <- left_join(common_names, rlus_names, by = "names")
+common_names <- left_join(common_names, rsus_names, by = "names")
 common_names <- drop_na(common_names)
-good_names <- common_names$names
 
-bad_names <- new_output %>% 
-  filter(!name %in% good_names)
-bad_names <- unique(bad_names$name)
-bad_names <- bad_names[1:8]
+good_names <- common_names$names
+good_names <- good_names[-337]
 
 # Reorganize data frame
 data <- new_output %>%
   # Remove pesky NA variable
   filter(variable != "NA") %>%
   # Remove missing names
-  filter(!name %in% bad_names) %>%
+  filter(name %in% good_names) %>%
   # Organize
   select(-c("X1", "x", "File.x", "File.y")) %>%
   relocate(c("rownum", "name"), .before = "variable")
@@ -104,11 +109,16 @@ data <- data %>% select(-new_year)
 # Heat flux equation
 # rsds - rsus + rlds - rlus - hfss - hfls
 
+# Select important columns
 heat_flux <- data %>% select(c(name, year, variable, value))
 
+# Reshape data
 heat_flux <- heat_flux %>%
-  pivot_wider(names_from = variable, values_from = value)
+  group_by(name, year) %>%
+  pivot_wider(names_from = variable, values_from = value) %>%
+  ungroup()
 
+# Compute equation
 hf_output <- list()
 for(n in seq_len(nrow(heat_flux))){
   hf_output[[n]] <- heat_flux$rsds[[n]] - heat_flux$rsus[[n]] + 
@@ -116,5 +126,6 @@ for(n in seq_len(nrow(heat_flux))){
     heat_flux$hfss[[n]] - heat_flux$hfls[[n]]
 }
 
+# Combine list with data frame
 heat_flux <- heat_flux %>%
   mutate(equation = hf_output)
