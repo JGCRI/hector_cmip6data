@@ -191,15 +191,37 @@ Now, comparing historical data from CMIP5 to CMIP6.
 ``` {r compare}
 # Read in csv
 hectorcal <- read.csv(file.path(BASE_DIR, "./heat_flux/CMIP5_heat_flux_final.csv"))
-hc <- hectorcal %>% filter(experiment == "historical", model == "CanESM2")
+hc <- hectorcal %>% filter(experiment == "historical")
 
 hist <- heat_flux %>%
-  filter(experiment == "esm-hist", model == "CanESM5")
+  filter(experiment == "esm-hist")
 
 # CMIP6
 summary(hist$value)
 
 #CMIP5
 summary(hc$value)
+
+```
+
+Plotting differences in CMIP5/6
+
+``` {r plot_diff}
+
+cmip6 <- hist %>% 
+  select(year, model, value) %>%
+  mutate(cmip = "CMIP6")
+
+cmip5 <- hc %>% 
+  select(year, model, value) %>%
+  mutate(cmip = "CMIP5")
+
+mips <- rbind(cmip6, cmip5)
+
+ggplot(mips, aes(year, value, color = cmip, group = model)) +
+  geom_line() +
+  labs(x = "Year",
+       y = "Value",
+       title = "Ocean heat flux in CMIP5 vs CMIP6")
 
 ```
