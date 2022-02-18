@@ -196,6 +196,10 @@ hc <- hectorcal %>% filter(experiment == "historical", model == "CanESM2")
 hist <- heat_flux %>%
   filter(experiment == "esm-hist", model == "CanESM5")
 
+# CMIP6
 summary(hist$value)
+
+#CMIP5
 summary(hc$value)
+
 ```
