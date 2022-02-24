@@ -1,0 +1,6 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,tas,ssp245,K,mon,r10i1p1f1,E3SM-1-1,2020,288.6381
+1,tas,ssp245,K,mon,r10i1p1f1,E3SM-1-1,2021,288.78525
+2,tas,ssp245,K,mon,r10i1p1f1,E3SM-1-1,2022,288.5272
+3,tas,ssp245,K,mon,r10i1p1f1,E3SM-1-1,2023,288.59268
+4,tas,ssp245,K,mon,r10i1p1f1,E3SM-1-1,2024,288.6141

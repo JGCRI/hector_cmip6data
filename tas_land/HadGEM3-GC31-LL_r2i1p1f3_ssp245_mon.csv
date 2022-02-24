@@ -1,0 +1,7 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,tas,ssp245,K,mon,r2i1p1f3,HadGEM3-GC31-LL,2015,288.65942
+1,tas,ssp245,K,mon,r2i1p1f3,HadGEM3-GC31-LL,2016,288.50925
+2,tas,ssp245,K,mon,r2i1p1f3,HadGEM3-GC31-LL,2017,288.81235
+3,tas,ssp245,K,mon,r2i1p1f3,HadGEM3-GC31-LL,2018,288.99268
+4,tas,ssp245,K,mon,r2i1p1f3,HadGEM3-GC31-LL,2019,288.81406
+5,tas,ssp245,K,mon,r2i1p1f3,HadGEM3-GC31-LL,2020,288.62924

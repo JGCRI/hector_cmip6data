@@ -1,0 +1,7 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,tas,ssp245,K,mon,r10i1p1f2,CNRM-CM6-1,2015,287.86206
+1,tas,ssp245,K,mon,r10i1p1f2,CNRM-CM6-1,2016,287.64975
+2,tas,ssp245,K,mon,r10i1p1f2,CNRM-CM6-1,2017,287.60712
+3,tas,ssp245,K,mon,r10i1p1f2,CNRM-CM6-1,2018,287.8643
+4,tas,ssp245,K,mon,r10i1p1f2,CNRM-CM6-1,2019,288.16852
+5,tas,ssp245,K,mon,r10i1p1f2,CNRM-CM6-1,2020,288.11182
