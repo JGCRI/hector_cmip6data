@@ -74,7 +74,8 @@ Tgav_plot <- Tgav %>%
 
 plot_data <- bind_rows(Tgav_l_plot, Tgav_plot)
 
-plot_data %>% 
+plot_data %>%
+  filter(model != "MPI-ESM1-2-LR") %>%
   ggplot(aes(year, value, color = type, 
              group = paste0(model, experiment, ensemble, type))) +
   geom_line() +
