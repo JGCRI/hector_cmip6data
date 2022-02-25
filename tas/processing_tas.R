@@ -4,11 +4,13 @@ library(ggplot2)
 library(ncdf4)
 library(here)
 
+# Set file paths, based on repo
 BASE_DIR <- here::here()
 
 path1 <- paste0(BASE_DIR, "/tas/csv1")
 path2 <- paste0(BASE_DIR, "/tas/csv2")
 
+# Access files
 files1 <- list.files(path = path1, pattern = "*.csv", full.names = TRUE)
 files2 <- list.files(path = path2, pattern = "*.csv", full.names = TRUE)
 
@@ -19,9 +21,10 @@ data1 <- lapply(files1, read_csv, col_types = "dccccccdd") %>%
 data2 <- lapply(files2, read_csv, col_types = "dccccccdd") %>% 
   bind_rows(.id = "File")
 
+# Combine data sets
 data <- bind_rows(data1, data2)
 
-# Add name identifier
+# Add name and row number identifier
 data$name <- paste0(data$model, "_", data$ensemble, "_", data$experiment)
 data$rownum <- seq_len(nrow(data))
 
@@ -78,11 +81,11 @@ plot_t <- Tgav %>%
        title = "CMIP6 runs - tas over time") +
   theme_minimal()
 
-co2exp <- tas %>% filter(experiment %in% c("1pctCO2", "abrupt-2xCO2", "abrupt-4xCO2"))
+co2exp <- Tgav %>% filter(experiment %in% c("1pctCO2", "abrupt-2xCO2", "abrupt-4xCO2"))
 
-hist <- tas %>% filter(experiment == "historical")
+hist <- Tgav %>% filter(experiment == "historical")
 
-ssps <- tas %>% filter(experiment %in% c("ssp119", "ssp126", "ssp245", "ssp370", "ssp434", "ssp460", "ssp534-over", "ssp585"))
+ssps <- Tgav %>% filter(experiment %in% c("ssp119", "ssp126", "ssp245", "ssp370", "ssp434", "ssp460", "ssp534-over", "ssp585"))
 
 plot_co2 <- co2exp %>%
   ggplot(aes(year, value, color = experiment, group = paste(model, experiment, ensemble))) +
