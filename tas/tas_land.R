@@ -60,7 +60,7 @@ Tgav_land <- tas %>%
   left_join(historical, by = "model") %>%
   mutate(Tgav = value - avg)
 
-# Graph tas_global vs tas_land
+# Graph tas_global vs tas_land - only for models with Tgav values
 Tgav_land$type <- "land"
 
 # Combine global and land values
@@ -76,6 +76,28 @@ plot_data <- bind_rows(Tgav_l_plot, Tgav_plot)
 
 plot_data %>%
   filter(model != "MPI-ESM1-2-LR") %>%
+  ggplot(aes(year, value, color = type, 
+             group = paste0(model, experiment, ensemble, type))) +
+  geom_line() +
+  facet_wrap(~experiment, scales = "free") +
+  labs(x = "Year",
+       y = "tas",
+       title = "CMIP6 runs - tas over time (models with Tgav values)") +
+  theme_minimal()
+
+# All models
+tas$type = "land"
+tas_l_plot <- tas %>%
+  select(c(year, value, model, experiment, ensemble, type))
+
+# Using Tgav from "processing_tas.R"
+tas_plot <- Tgav %>%
+  select(year, value, model, experiment, ensemble, type)
+
+plot_data <- bind_rows(tas_l_plot, tas_plot)
+
+plot_data %>%
+  # filter(model != "MPI-ESM1-2-LR") %>%
   ggplot(aes(year, value, color = type, 
              group = paste0(model, experiment, ensemble, type))) +
   geom_line() +
