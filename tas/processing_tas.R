@@ -69,6 +69,7 @@ Tgav <- tas %>%
   filter(model %in% models, !experiment == "historical") %>%
   left_join(historical, by = "model") %>%
   mutate(Tgav = value - avg)
+Tgav$type <- "global"
 
 ### Graphs and notes
 ## Plot results

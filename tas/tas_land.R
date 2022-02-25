@@ -55,7 +55,31 @@ colnames(historical) <- c("model", "avg")
 
 # Calculate Tgav
 models <- historical$model
-Tgav <- tas %>%
+Tgav_land <- tas %>%
   filter(model %in% models, !experiment == "esm-hist") %>%
   left_join(historical, by = "model") %>%
   mutate(Tgav = value - avg)
+
+# Graph tas_global vs tas_land
+Tgav_land$type <- "land"
+
+# Combine global and land values
+# Access only needed columns
+Tgav_l_plot <- Tgav_land %>%
+  select(c(year, value, model, experiment, ensemble, type))
+
+# Using Tgav from "processing_tas.R"
+Tgav_plot <- Tgav %>%
+  select(year, value, model, experiment, ensemble, type)
+
+plot_data <- bind_rows(Tgav_l_plot, Tgav_plot)
+
+plot_data %>% 
+  ggplot(aes(year, value, color = type, 
+             group = paste0(model, experiment, ensemble, type))) +
+  geom_line() +
+  facet_wrap(~experiment, scales = "free") +
+  labs(x = "Year",
+       y = "tas",
+       title = "CMIP6 runs - tas over time") +
+  theme_minimal()
