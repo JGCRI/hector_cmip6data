@@ -98,7 +98,7 @@ Below are several graphs with the `land_tas` data. I first compared the models t
 
 There were a few models that returned unusually low values for `tas`. They are listed below.
 
-``` {r graphs}
+``` {r graphs, fig.height = 9, fig.width = 12}
 
 # Graph tas_global vs tas_land - only for models with Tgav values
 # Assign type identifier
@@ -157,7 +157,7 @@ tas %>%
   facet_wrap(~experiment, scales = "free") +
   labs(x = "Year",
        y = "tas",
-       title = "CMIP6 runs - tas over time") +
+       title = "CMIP6 runs - tas_land over time") +
   theme_minimal()
 
 # What are the low models?
@@ -165,4 +165,4 @@ low_models <- tas %>%
   filter(value < 200)
 low_models <- unique(low_models$model)
 low_models
-
+```
