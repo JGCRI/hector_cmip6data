@@ -106,3 +106,19 @@ plot_data %>%
        y = "tas",
        title = "CMIP6 runs - tas over time") +
   theme_minimal()
+
+# Plot just tas_land models
+tas %>%
+  ggplot(aes(year, value, color = model, 
+             group = paste0(model, experiment, ensemble))) +
+  geom_line() +
+  facet_wrap(~experiment, scales = "free") +
+  labs(x = "Year",
+       y = "tas",
+       title = "CMIP6 runs - tas over time") +
+  theme_minimal()
+
+# What are the low models?
+low_models <- tas %>% 
+  filter(value < 200)
+low_models <- unique(low_models$model)
