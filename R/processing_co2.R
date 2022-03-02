@@ -7,8 +7,9 @@ library(here)
 # Set directory, read in files
 BASE_DIR <- here::here()
 path = paste0(BASE_DIR, "/co2")
+path1 = paste0(BASE_DIR, "/co2/new")
 
-files <- list.files(path = path, pattern = "*.csv", full.names = TRUE)
+files <- list.files(path = path1, pattern = "*.csv", full.names = TRUE)
 
 # Read in data, forcing column types
 data <- lapply(files, read_csv, col_types = "dccccccdd") %>%
