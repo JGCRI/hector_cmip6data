@@ -132,3 +132,4 @@ hf_output <- as.numeric(as.charachter(hf_output))
 heat_flux <- heat_flux %>%
   mutate(equation = hf_output)
 
+# Data visualization in the corresponding Rmd

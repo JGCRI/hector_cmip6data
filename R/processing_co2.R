@@ -4,30 +4,47 @@ library(ggplot2)
 library(ncdf4)
 library(here)
 
+# Set directory, read in files
 BASE_DIR <- here::here()
+path = paste0(BASE_DIR, "/co2")
 
-mypath <-  "C:/Users/pres520/PycharmProjects/pangeo/test"
-
-files <- list.files(path = mypath, pattern = "*.csv", full.names = TRUE)
+files <- list.files(path = path, pattern = "*.csv", full.names = TRUE)
 
 # Read in data, forcing column types
 data <- lapply(files, read_csv, col_types = "dccccccdd") %>%
   bind_rows(.id = "File")
 
-# Add name identifier
+# Add name and row number identifier
 data$name <- paste0(data$model, "_", data$ensemble, "_", data$experiment)
+data$rownum <- seq_len(nrow(data))
 
-# Non-conventional year numbering
-weird_range <- data %>% filter(year < 1850 | year > 2500)
-weird_range <- weird_range %>% mutate(ncdf = paste0(model, "_", ensemble, "_", experiment))
-weird_models <- unique(weird_range$name)
-weird_range$year <- weird_range$year + 1849
+# Correct non-conventional years in CO2 forcing experiments
+# Scale to start at 1850
+years <- data %>%
+  select("rownum", "year", "File") %>%
+  filter(year < 1850 | year > 2500) %>%
+  group_by(File) %>%
+  mutate(start_year = year[1],
+         scale = year - start_year,
+         new_year = 1850 + scale) %>%
+  select("rownum", "new_year")
 
-# Normal years (1850-2500)
-normal_range <- data %>% filter(year > 1849 & year < 2500)
-normal_range <- normal_range %>% bind_rows(normal_range, weird_range)
+# Combine with original dataframe
+co2 <- left_join(data, years, by = "rownum")
 
-plot <- normal_range %>% 
+# Problem - need to make one year column with "year" and "new_year"
+# If new_year has an NA, replace it with year, otherwise leave as is
+replace_year <- ifelse(is.na(co2$new_year), 
+                       co2$year, 
+                       co2$new_year)
+
+co2$year <- replace_year
+
+# Get rid of unnecessary columns
+co2 <- co2 %>% select(c(-new_year, -File.y, -X1))
+
+
+plot <- co2 %>% 
   ggplot(aes(year, value, color = paste(model, experiment), group = paste(model, experiment, ensemble))) +
   geom_line() +
   facet_wrap(~experiment, scales = "free_x") +
@@ -36,10 +53,11 @@ plot <- normal_range %>%
        title = "Atmospheric CO2 over time") +
   theme_minimal()
 
-no_facet <- normal_range %>%
+no_facet <- co2 %>%
   ggplot(aes(year, value, color = paste(model, experiment), group = paste(model, experiment, ensemble))) +
   geom_line() +
   labs(x = "Year",
        y = "mol mol-1",
        title = "Atmospheric CO2 over time") +
   theme_minimal()
+

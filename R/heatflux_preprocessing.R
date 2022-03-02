@@ -19,6 +19,8 @@ rsus <- test_six %>% filter(variable_id == "rsus")
 rsds <- test_six %>% filter(variable_id == "rsds")
 hfls <- test_six %>% filter(variable_id == "hfls")
 
+# Pull out zstore addresses for names with all six variables
+# To be used in Python script
 write.csv(rlds$zstore, "rlds_addresses.csv")
 write.csv(rlus$zstore, "rlus_addresses.csv")
 write.csv(hfss$zstore, "hfss_addresses.csv")

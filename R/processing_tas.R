@@ -53,7 +53,7 @@ tas$year <- replace_year
 # Get rid of unnecessary columns
 tas <- tas %>% select(c(-new_year, -File.y, -X1))
 
-## Get historical average
+# Get historical average
 histo <- tas %>%
   filter(experiment == "historical") %>%
   group_by(model) %>%
@@ -63,7 +63,7 @@ historical <- as.data.frame(unique(histo$model))
 historical$avg <- unique(histo$hist_av)
 colnames(historical) <- c("model", "avg")
 
-## Get Tgav
+# Get Tgav
 models <- historical$model
 Tgav <- tas %>%
   filter(model %in% models, !experiment == "historical") %>%
@@ -71,8 +71,7 @@ Tgav <- tas %>%
   mutate(Tgav = value - avg)
 Tgav$type <- "global"
 
-### Graphs and notes
-## Plot results
+# Plot results
 plot_t <- Tgav %>% 
   ggplot(aes(year, value, color = model, group = paste(model, experiment, ensemble))) +
   geom_line() +
@@ -82,12 +81,12 @@ plot_t <- Tgav %>%
        title = "CMIP6 runs - tas over time") +
   theme_minimal()
 
+# Filter for particular experiments
 co2exp <- Tgav %>% filter(experiment %in% c("1pctCO2", "abrupt-2xCO2", "abrupt-4xCO2"))
-
 hist <- Tgav %>% filter(experiment == "historical")
-
-ssps <- Tgav %>% filter(experiment %in% c("ssp119", "ssp126", "ssp245", "ssp370", "ssp434", "ssp460", "ssp534-over", "ssp585"))
-
+ssps <- Tgav %>% filter(experiment %in% c("ssp119", "ssp126", "ssp245", "ssp370", 
+                                          "ssp434", "ssp460", "ssp534-over", "ssp585"))
+# Plot just particular experiments
 plot_co2 <- co2exp %>%
   ggplot(aes(year, value, color = experiment, group = paste(model, experiment, ensemble))) +
   geom_line() +
