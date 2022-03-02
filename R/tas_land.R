@@ -4,6 +4,7 @@ library(tidyr)
 library(ggplot2)
 library(here)
 
+# Set directory, read in files
 BASE_DIR <- here::here()
 path = paste0(BASE_DIR, "/tas_land")
 
@@ -54,7 +55,10 @@ historical$avg <- unique(hist$hist_av)
 colnames(historical) <- c("model", "avg")
 
 # Calculate Tgav
+# What models have Tgav values
 models <- historical$model
+
+# Filter and calculate
 Tgav_land <- tas %>%
   filter(model %in% models, !experiment == "esm-hist") %>%
   left_join(historical, by = "model") %>%
@@ -69,12 +73,14 @@ Tgav_l_plot <- Tgav_land %>%
   select(c(year, value, model, experiment, ensemble, type))
 
 # Using Tgav from "processing_tas.R"
+Tgav <- read.csv("./tas/Global_tas_data.csv")
 Tgav_plot <- Tgav %>%
   select(year, value, model, experiment, ensemble, type)
 
 plot_data <- bind_rows(Tgav_l_plot, Tgav_plot)
 
 plot_data %>%
+  # This model has an abnormally low tas_land value
   filter(model != "MPI-ESM1-2-LR") %>%
   ggplot(aes(year, value, color = type, 
              group = paste0(model, experiment, ensemble, type))) +
@@ -90,14 +96,20 @@ tas$type = "land"
 tas_l_plot <- tas %>%
   select(c(year, value, model, experiment, ensemble, type))
 
-# Using Tgav from "processing_tas.R"
+# Using Tgav from "processing_tas.R" (same as above)
 tas_plot <- Tgav %>%
   select(year, value, model, experiment, ensemble, type)
 
-plot_data <- bind_rows(tas_l_plot, tas_plot)
+plot_all_data <- bind_rows(tas_l_plot, tas_plot)
 
-plot_data %>%
-  # filter(model != "MPI-ESM1-2-LR") %>%
+# Some models have very low tas_land values
+low_models <- tas %>% 
+  filter(value < 200)
+low_models <- unique(low_models$model)
+
+plot_all_data %>%
+  # These model have abnormally low tas_land values
+  filter(!model %in% low_models) %>%
   ggplot(aes(year, value, color = type, 
              group = paste0(model, experiment, ensemble, type))) +
   geom_line() +
@@ -109,6 +121,7 @@ plot_data %>%
 
 # Plot just tas_land models
 tas %>%
+  filter(!model %in% low_models) %>%
   ggplot(aes(year, value, color = model, 
              group = paste0(model, experiment, ensemble))) +
   geom_line() +
@@ -118,7 +131,3 @@ tas %>%
        title = "CMIP6 runs - tas over time") +
   theme_minimal()
 
-# What are the low models?
-low_models <- tas %>% 
-  filter(value < 200)
-low_models <- unique(low_models$model)
