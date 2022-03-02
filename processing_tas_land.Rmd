@@ -20,6 +20,7 @@ library(tidyr)
 library(ggplot2)
 library(here)
 
+# Set directory, read in files
 BASE_DIR <- here::here()
 path = paste0(BASE_DIR, "/tas_land")
 
@@ -109,7 +110,7 @@ Tgav_l_plot <- Tgav_land %>%
   select(c(year, value, model, experiment, ensemble, type))
 
 # Using global data from "processing_tas.R"
-Tgav <- read.csv("./tas/Global_tas_data.csv")
+Tgav <- read.csv(paste0(BASE_DIR, "./tas/Global_tas_data.csv"))
 Tgav_plot <- Tgav %>%
   select(year, value, model, experiment, ensemble, type)
 
@@ -135,11 +136,17 @@ tas_l_plot <- tas %>%
   select(c(year, value, model, experiment, ensemble, type))
 
 # Combine data
-plot_data <- bind_rows(tas_l_plot, Tgav_plot)
+plot_all_data <- bind_rows(tas_l_plot, Tgav_plot)
+
+# Some models have very low tas_land values
+low_models <- tas %>% 
+  filter(value < 200)
+low_models <- unique(low_models$model)
+low_models
 
 # Plot
-plot_data %>%
-  # filter(model != "MPI-ESM1-2-LR") %>%
+plot_all_data %>%
+  filter(!model %in% low_models) %>%
   ggplot(aes(year, value, color = type, 
              group = paste0(model, experiment, ensemble, type))) +
   geom_line() +
@@ -151,6 +158,7 @@ plot_data %>%
 
 # Plot just tas_land models (no global comparison)
 tas %>%
+  filter(!model %in% low_models) %>%
   ggplot(aes(year, value, color = model, 
              group = paste0(model, experiment, ensemble))) +
   geom_line() +
@@ -160,9 +168,4 @@ tas %>%
        title = "CMIP6 runs - tas_land over time") +
   theme_minimal()
 
-# What are the low models?
-low_models <- tas %>% 
-  filter(value < 200)
-low_models <- unique(low_models$model)
-low_models
 ```
