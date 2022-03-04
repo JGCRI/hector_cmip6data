@@ -1,6 +1,10 @@
-# Processing CMIP6 heat flux data using Pangeo
-# January 2022
-# Leeya Pressburger
+# ------------------------------------------------------------------------------
+# Program Name: A4c.rlds.py
+# Authors: Leeya Pressburger
+# Date Last Modified: February 2022
+# Program Purpose: Downloading CMIP6 `rlds` data using Pangeo
+# TODO:
+# ------------------------------------------------------------------------------
 
 # Import packages
 import fsspec
@@ -16,27 +20,6 @@ pd.set_option('display.max_columns', None)
 
 # Helper functions from stitches project - data processing
 # https://github.com/JGCRI/stitches/blob/mega_cleanup/stitches/fx_data.py#L29
-
-def get_lat_name(ds):
-    """ Get the name for the latitude values (could be either lat or latitude).
-    :param ds:    xarray dataset of CMIP data.
-    :return:    the string name for the latitude variable.
-    """
-    for lat_name in ['lat', 'latitude']:
-        if lat_name in ds.coords:
-            return lat_name
-    raise RuntimeError("Couldn't find a latitude coordinate")
-
-def global_mean(ds):
-    """ Get the weighted global mean for a variable.
-    :param ds:  xarray dataset of CMIP data.
-    :return:    xarray dataset of the weighted global mean.
-    """
-    lat = ds[get_lat_name(ds)]
-    weight = np.cos(np.deg2rad(lat))
-    weight /= weight.mean()
-    other_dims = set(ds.dims) - {'time'}
-    return (ds * weight).mean(other_dims)
 
 def get_ds_meta(ds):
     """ Get the meta data information from the xarray data set.
@@ -92,12 +75,10 @@ def selstr(a, start, stop):
 
 # End of helper functions
 
-def mean_heatflux(path):
+def get_rlds(path):
     """ For a pangeo file, calculate the area weighted ocean mean. To be used with heat flux variables.
-
     :param path:  str zstore path corresponding to a pangeo netcdf
-
-    :return:      pandas.core.frame.DataFrame of area-weighted HL tos from a single netcdf file
+    :return:      csv file of output data
     """
     ds = xr.open_zarr(fsspec.get_mapper(path), consolidated=True)
 
@@ -144,50 +125,17 @@ def mean_heatflux(path):
     df = pd.DataFrame(data=d)
     out = combine_df(meta_data, df)
 
-    name = out["model"][0] + "_" + out["ensemble"][0] + "_" + out["experiment"][0] + "_" + out["frequency"][0]
+    name = out["model"][0] + "_" + out["experiment"][0] + "_" + out["ensemble"][0]
     # Save as netcdf and csv files
     # x.to_netcdf(name + ".nc")
-    out.to_csv(name + ".csv", header=True, index=True)
+    out.to_csv("./rlds/" + name + ".csv", header=True, index=True)
 
-address_rlds = pd.read_csv("rlds_addresses.csv")
-address_rlds= address_rlds["x"]
+# Read in addresses
+address_rlds = pd.read_csv("./inputs/rlds_addresses.csv")
+address_all= address_rlds["x"]
 
-skips = [#BCC-CSM2-MR
-        36, 37, 43, 44, 45, 90, 91, 92, 93, 158,
-        # AWI-CM-1-1-MR
-        480, 481, 482, 483, 484, 485, 486, 488, 688, 689,
-        # NUIST/NESM3
-        528, 529, 607, 608, 609, 610, 611, 612, 613,
-        # NorESM2-LM
-        625, 697, 698, 699,
-        700, 705, 712, 714, 715, 717,
-        # FGOALS-g3
-        628, 629, 630,
-        757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 771, 772, 774,
-        892, 1019,
-        # FGOALS-f3-L
-        684, 685, 686, 687, 690, 691, 692, 916, 917, 918,
-        # KACE-1-0-G
-        678, 679, 680, 681, 682,
-        746, 747, 748, 749, 750, 751,
-        # GISS-E2-2-G
-        721, 722,
-        # CCCR-IITM
-        695, 754, 1010, 1011, 1012,
-        # EC-Earth3, EC-Earth3-Veg - not enough values to unpack
-        860, 869, 875, 876, 877, 878, 881,
-        1039, 1044,
-        #CAS-ESM2-0
-        789, 793,
-        #THU/CIESM
-        796, 797, 798, 799, 823,
-        # FIO-ESM-2-0
-        1007, 1008, 1009, 1013, 1014, 1015, 1016, 1017,
-        1018, 1020, 1021, 1022, 1023, 1024, 1025]
-
-address_skips = address_rlds.drop(skips).reset_index(drop=True)
-
-for items in address_skips:
-    mean_heatflux(items)
+# Process data
+for items in address_all:
+    get_rlds(items)
 
 session_info.show()

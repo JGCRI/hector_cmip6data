@@ -1,6 +1,10 @@
-# Processing CMIP6 heat flux data using Pangeo
-# January 2022
-# Leeya Pressburger
+# ------------------------------------------------------------------------------
+# Program Name: A4d.rlus.py
+# Authors: Leeya Pressburger
+# Date Last Modified: February 2022
+# Program Purpose: Downloading CMIP6 `rlus` data using Pangeo
+# TODO:
+# ------------------------------------------------------------------------------
 
 # Import packages
 import fsspec
@@ -16,28 +20,6 @@ pd.set_option('display.max_columns', None)
 
 # Helper functions from stitches project - data processing
 # https://github.com/JGCRI/stitches/blob/mega_cleanup/stitches/fx_data.py#L29
-
-def get_lat_name(ds):
-    """ Get the name for the latitude values (could be either lat or latitude).
-    :param ds:    xarray dataset of CMIP data.
-    :return:    the string name for the latitude variable.
-    """
-    for lat_name in ['lat', 'latitude']:
-        if lat_name in ds.coords:
-            return lat_name
-    raise RuntimeError("Couldn't find a latitude coordinate")
-
-def global_mean(ds):
-    """ Get the weighted global mean for a variable.
-    :param ds:  xarray dataset of CMIP data.
-    :return:    xarray dataset of the weighted global mean.
-    """
-    lat = ds[get_lat_name(ds)]
-    weight = np.cos(np.deg2rad(lat))
-    weight /= weight.mean()
-    other_dims = set(ds.dims) - {'time'}
-    return (ds * weight).mean(other_dims)
-
 def get_ds_meta(ds):
     """ Get the meta data information from the xarray data set.
     :param ds:  xarray dataset of CMIP data.
@@ -58,28 +40,6 @@ def get_ds_meta(ds):
 # https://github.com/JGCRI/stitches/blob/mega_cleanup/stitches/fx_pangeo.py
 # Define the functions that are useful for working with the pangeo data base
 # see https://pangeo.io/index.html for more details.
-
-def fetch_pangeo_table():
-    """ Get a copy of the pangeo archive contents
-    :return: a pd data frame containing information about the model, source, experiment, ensemble and
-    so on that is available for download on pangeo.
-    """
-
-    # The url path that contains to the pangeo archive table of contents.
-    url = "https://storage.googleapis.com/cmip6/pangeo-cmip6.json"
-    out = intake.open_esm_datastore(url)
-
-    return out.df
-
-def fetch_nc(zstore):
-    """Extract data for a single file.
-    :param zstore:                str of the location of the cmip6 data file on pangeo.
-    :return:                      an xarray containing cmip6 data downloaded from the pangeo.
-    """
-    ds = xr.open_zarr(fsspec.get_mapper(zstore))
-    ds.sortby('time')
-    return ds
-
 def combine_df(df1, df2):
     """ Join the data frames together.
     :param df1:   pandas data frame 1.
@@ -113,12 +73,10 @@ def selstr(a, start, stop):
 
 # End of helper functions
 
-def mean_heatflux(path):
+def get_rlus(path):
     """ For a pangeo file, calculate the area weighted ocean mean. To be used with heat flux variables.
-
     :param path:  str zstore path corresponding to a pangeo netcdf
-
-    :return:      pandas.core.frame.DataFrame of area-weighted HL tos from a single netcdf file
+    :return:      csv file of output data
     """
     ds = xr.open_zarr(fsspec.get_mapper(path), consolidated=True)
 
@@ -166,51 +124,18 @@ def mean_heatflux(path):
     df = pd.DataFrame(data=d)
     out = combine_df(meta_data, df)
 
-    name = out["model"][0] + "_" + out["ensemble"][0] + "_" + out["experiment"][0] + "_" + out["frequency"][0]
-    # Save as netcdf and csv files
-    # x.to_netcdf(name + ".nc")
-    out.to_csv(name + ".csv", header=True, index=True)
+    name = out["model"][0] + "_" + out["experiment"][0] + "_" + out["ensemble"][0]
+    # Save as csv file
+    out.to_csv("./rlus/" + name + ".csv", header=True, index=True)
 
-address_rlus = pd.read_csv("./rlus/rlus_addresses.csv")
-address_rlus= address_rlus["x"]
+# Read in addresses
+address_rlus = pd.read_csv("./inputs/rlus_addresses.csv")
+address_all = address_rlus["x"]
 
-address_skips = address_rlus.drop(skips)
-address_index = address_skips.reset_index(drop=True)
+address_all= address_all.reset_index(drop=True)
 
-for items in address_index[699:931]:
-    mean_heatflux(items)
+# Process data
+for items in address_all:
+    get_rlus(items)
 
-skips = [#BCC-CSM2-MR
-        36, 37, 43, 44, 45, 90, 91, 92, 93, 158,
-        # AWI-CM-1-1-MR
-        469, 479, 480, 481, 482, 484, 485, 486, 688, 689,
-        # NUIST/NESM3
-        527, 528, 607, 608, 609, 610, 611, 612,
-        # NorESM2-LM
-        625, 698, 699, 700, 705, 712, 714, 715, 717,
-        # FGOALS-g3
-        628, 629, 630, 757, 758, 759, 760, 761, 762, 763,
-        764, 765, 766, 767, 768, 769, 771, 772, 774,
-        887, 910, 911, 912, 1019,
-        # FGOALS-f3-L
-        684, 685, 686, 687, 690, 691, 692,
-        # KACE-1-0-G
-        678, 679, 680, 681, 682, 746, 747, 748, 749, 750, 751,
-        # GISS-E2-2-G
-        721, 722,
-        # CCCR-IITM
-        698, 754, 1010, 1011, 1012,
-        # EC-Earth3, EC-Earth3-Veg - not enough values to unpack
-        639, 640, 860, 869, 873, 874, 875, 876, 879, 998, 1039, 1044,
-        # THU/CIESM
-        999, 1000, 1001, 1002, 1003,
-        # CAS-ESM2-0
-        944, 886,
-        # FIO-ESM-2-0
-        1007, 1008, 1009, 1013, 1014, 1015, 1016, 1017,
-        1018, 1020, 1021, 1022, 1023, 1024, 1025]
-
-
-nums = [678, 679, 680, 681, 682, 684, 685, 686, 687, 688, 689, 690, 691, 692, 698, 699,
-        700, 721, 722, 746, 747, 748, 749, 750, 751,
-        757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 771, 772, 774]
+session_info.show()

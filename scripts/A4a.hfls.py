@@ -1,7 +1,10 @@
-# Processing CMIP6 heat flux data using Pangeo
-# January 2022
-# Leeya Pressburger
-
+# ------------------------------------------------------------------------------
+# Program Name: A4a.hfls.py
+# Authors: Leeya Pressburger
+# Date Last Modified: February 2022
+# Program Purpose: Downloading CMIP6 `hfls` data using Pangeo
+# TODO:
+# ------------------------------------------------------------------------------
 # Import packages
 import fsspec
 import intake
@@ -16,28 +19,6 @@ pd.set_option('display.max_columns', None)
 
 # Helper functions from stitches project - data processing
 # https://github.com/JGCRI/stitches/blob/mega_cleanup/stitches/fx_data.py#L29
-
-def get_lat_name(ds):
-    """ Get the name for the latitude values (could be either lat or latitude).
-    :param ds:    xarray dataset of CMIP data.
-    :return:    the string name for the latitude variable.
-    """
-    for lat_name in ['lat', 'latitude']:
-        if lat_name in ds.coords:
-            return lat_name
-    raise RuntimeError("Couldn't find a latitude coordinate")
-
-def global_mean(ds):
-    """ Get the weighted global mean for a variable.
-    :param ds:  xarray dataset of CMIP data.
-    :return:    xarray dataset of the weighted global mean.
-    """
-    lat = ds[get_lat_name(ds)]
-    weight = np.cos(np.deg2rad(lat))
-    weight /= weight.mean()
-    other_dims = set(ds.dims) - {'time'}
-    return (ds * weight).mean(other_dims)
-
 def get_ds_meta(ds):
     """ Get the meta data information from the xarray data set.
     :param ds:  xarray dataset of CMIP data.
@@ -92,12 +73,10 @@ def selstr(a, start, stop):
 
 # End of helper functions
 
-def mean_heatflux(path):
+def get_hfls(path):
     """ For a pangeo file, calculate the area weighted ocean mean. To be used with heat flux variables.
-
     :param path:  str zstore path corresponding to a pangeo netcdf
-
-    :return:      pandas.core.frame.DataFrame of area-weighted HL tos from a single netcdf file
+    :return:      csv file of output data
     """
     ds = xr.open_zarr(fsspec.get_mapper(path), consolidated=True)
 
@@ -144,58 +123,20 @@ def mean_heatflux(path):
     df = pd.DataFrame(data=d)
     out = combine_df(meta_data, df)
 
-    name = out["model"][0] + "_" + out["ensemble"][0] + "_" + out["experiment"][0] + "_" + out["frequency"][0]
+    name = out["model"][0] + "_" + out["experiment"][0] + "_" + out["ensemble"][0]
     # Save as netcdf and csv files
     # x.to_netcdf(name + ".nc")
-    out.to_csv(name + ".csv", header=True, index=True)
+    out.to_csv("./hfls/" + name + ".csv", header=True, index=True)
 
-address_hfls = pd.read_csv("hfls_addresses.csv")
-address_hfls = address_hfls["x"]
+# Accessing data
+# Read in addresses
+address_hfls = pd.read_csv("./inputs/hfls_addresses.csv")
+address_all = address_hfls["x"]
 
-skips = [#BCC-CSM2-MR
-        36, 37, 43, 44, 45, 90, 91, 92, 93, 158,
-        # AWI-CM-1-1-MR
-        479, 480, 481, 483, 484, 485, 486, 487, 687, 688,
-        # NUIST/NESM3
-        527, 528, 607, 608, 609, 610, 611, 612,
-        # NorESM2-LM
-        623, 697, 698, 699, 707, 711, 712, 713, 716,
-        # FGOALS-g3
-        627, 628, 629,
-        756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 770, 771, 782,
-        906, 1025,
-        # FGOALS-f3-L
-        683, 684, 685, 686, 689, 690, 691, 916, 917, 918, 930, 931, 932,
-        # KACE-1-0-G
-        # new index
-        625, 626, 629,
-        # old index
-        677, 678, 679, 680, 681,
-        745, 746, 747, 748, 749, 750,
-        # GISS-E2-2-G
-        720, 721,
-        # CCCR-IITM
-        753, 772, 1010, 1011, 1012,
-        # EC-Earth3, EC-Earth3-Veg - not enough values to unpack
-        # new index
-        637, 638,
-        # old index
-        868, 883, 889, 890, 891, 892, 895,
-        1039, 1044,
-        # CAS-ESM2-0
-        789, 793,
-        # THU/CIESM
-        896, 897, 898, 899, 924,
-        # FIO-ESM-2-0
-        773, 774, 775, 776, 777, 778, 779,
-        780, 781, 873, 874, 875, 876, 877, 878,
-        # IITM-ESM
-        # new index
-        907, 908, 909]
+address_all = address_all.reset_index(drop=True)
 
-address_skips  = address_hfls.drop(skips).reset_index(drop=True)
-
-for items in address_skips:
-    mean_heatflux(items)
+# Process data
+for items in address_all:
+    get_hfls(items)
 
 session_info.show()

@@ -1,6 +1,10 @@
-# Processing CMIP6 heat flux data using Pangeo
-# January 2022
-# Leeya Pressburger
+# ------------------------------------------------------------------------------
+# Program Name: A4e.rsds.py
+# Authors: Leeya Pressburger
+# Date Last Modified: February 2022
+# Program Purpose: Downloading CMIP6 `rsds` data using Pangeo
+# TODO:
+# ------------------------------------------------------------------------------
 
 # Import packages
 import fsspec
@@ -16,28 +20,6 @@ pd.set_option('display.max_columns', None)
 
 # Helper functions from stitches project - data processing
 # https://github.com/JGCRI/stitches/blob/mega_cleanup/stitches/fx_data.py#L29
-
-def get_lat_name(ds):
-    """ Get the name for the latitude values (could be either lat or latitude).
-    :param ds:    xarray dataset of CMIP data.
-    :return:    the string name for the latitude variable.
-    """
-    for lat_name in ['lat', 'latitude']:
-        if lat_name in ds.coords:
-            return lat_name
-    raise RuntimeError("Couldn't find a latitude coordinate")
-
-def global_mean(ds):
-    """ Get the weighted global mean for a variable.
-    :param ds:  xarray dataset of CMIP data.
-    :return:    xarray dataset of the weighted global mean.
-    """
-    lat = ds[get_lat_name(ds)]
-    weight = np.cos(np.deg2rad(lat))
-    weight /= weight.mean()
-    other_dims = set(ds.dims) - {'time'}
-    return (ds * weight).mean(other_dims)
-
 def get_ds_meta(ds):
     """ Get the meta data information from the xarray data set.
     :param ds:  xarray dataset of CMIP data.
@@ -58,28 +40,6 @@ def get_ds_meta(ds):
 # https://github.com/JGCRI/stitches/blob/mega_cleanup/stitches/fx_pangeo.py
 # Define the functions that are useful for working with the pangeo data base
 # see https://pangeo.io/index.html for more details.
-
-def fetch_pangeo_table():
-    """ Get a copy of the pangeo archive contents
-    :return: a pd data frame containing information about the model, source, experiment, ensemble and
-    so on that is available for download on pangeo.
-    """
-
-    # The url path that contains to the pangeo archive table of contents.
-    url = "https://storage.googleapis.com/cmip6/pangeo-cmip6.json"
-    out = intake.open_esm_datastore(url)
-
-    return out.df
-
-def fetch_nc(zstore):
-    """Extract data for a single file.
-    :param zstore:                str of the location of the cmip6 data file on pangeo.
-    :return:                      an xarray containing cmip6 data downloaded from the pangeo.
-    """
-    ds = xr.open_zarr(fsspec.get_mapper(zstore))
-    ds.sortby('time')
-    return ds
-
 def combine_df(df1, df2):
     """ Join the data frames together.
     :param df1:   pandas data frame 1.
@@ -113,12 +73,10 @@ def selstr(a, start, stop):
 
 # End of helper functions
 
-def mean_heatflux(path):
+def get_rsds(path):
     """ For a pangeo file, calculate the area weighted ocean mean. To be used with heat flux variables.
-
     :param path:  str zstore path corresponding to a pangeo netcdf
-
-    :return:      pandas.core.frame.DataFrame of area-weighted HL tos from a single netcdf file
+    :return:      csv file of output data
     """
     ds = xr.open_zarr(fsspec.get_mapper(path), consolidated=True)
 
@@ -169,47 +127,16 @@ def mean_heatflux(path):
     name = out["model"][0] + "_" + out["ensemble"][0] + "_" + out["experiment"][0] + "_" + out["frequency"][0]
     # Save as netcdf and csv files
     # x.to_netcdf(name + ".nc")
-    out.to_csv(name + ".csv", header=True, index=True)
+    out.to_csv("./rsds/" + name + ".csv", header=True, index=True)
 
-address_rsds = pd.read_csv("./rsds/rsds_addresses.csv")
-address_rsds= address_rsds["x"]
+# Read in addresses
+address_rsds = pd.read_csv("./inputs/rsds_addresses.csv")
+address_all = address_rsds["x"]
 
-skip = [# BCC-CSM2-MR
-        36, 37, 43, 44, 45, 90, 91, 92, 93, 158,
-        # AWI-CM-1-1-MR
-        480, 481, 482, 483, 485, 486, 487, 488, 687, 688,
-        # NUIST/NESM3
-        528, 529, 608, 609, 610, 611, 612, 613,
-        # NorESM2-LM
-        625, 697, 698, 699, 704, 710, 713, 714, 716,
-        # FGOALS-g3
-        627, 628, 629,
-        756, 757, 758, 759, 760, 761, 762, 763,
-        764, 765, 767, 768, 770, 771, 773,
-        891, 1019,
-        #FGOALS-f3-L
-        683, 684, 685, 686, 689, 690, 691, 915, 916, 917,
-        # KACE-1-0-G
-        655, 656, 659, 677, 678, 679, 680, 681,
-        745, 746, 747, 748, 749, 750,
-        # EC-Earth3-Veg / EC-Earth3-CC
-        666, 668, 859, 868, 874, 875, 876, 877, 880, 1039, 1044,
-        # GISS-E2-2-G
-        720, 721,
-        # CCCR-IITM
-        753, 772,
-        # CAS-ESM2-0
-        869, 873,
-        # THU/CIESM
-        881, 882, 883, 884, 909,
-        # FIO-ESM-2-0
-        1007, 1008, 1009, 1013, 1014, 1015, 1015, 1017,
-        1018, 1020, 1021, 1022, 1023, 1024, 1025,
-        # CCCR-IITM
-        1010, 1011, 1012]
+address_all= address_all.reset_index(drop=True)
 
-address_skip = address_rsds.drop(skip)
-address_index = address_skip.reset_index(drop=True)
+# Process data
+for items in address_all:
+    get_rsds(items)
 
-for items in address_index[908:927]:
-    mean_heatflux(items)
+
