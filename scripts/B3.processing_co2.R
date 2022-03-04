@@ -1,22 +1,29 @@
+# ------------------------------------------------------------------------------
+# Program Name: B3.processing_co2.R
+# Authors: Leeya Pressburger
+# Date Last Modified: December 2021
+# Program Purpose: Processing CMIP6 CO2 data
+# TODO:
+# ------------------------------------------------------------------------------
+
+# Import packages
 library(readr)
 library(dplyr)
 library(ggplot2)
-library(ncdf4)
 library(here)
 
 # Set directory, read in files
 BASE_DIR <- here::here()
 path = paste0(BASE_DIR, "/co2")
-path1 = paste0(BASE_DIR, "/co2/new")
 
-files <- list.files(path = path1, pattern = "*.csv", full.names = TRUE)
+files <- list.files(path = path, pattern = "*.csv", full.names = TRUE)
 
 # Read in data, forcing column types
 data <- lapply(files, read_csv, col_types = "dccccccdd") %>%
   bind_rows(.id = "File")
 
 # Add name and row number identifier
-data$name <- paste0(data$model, "_", data$ensemble, "_", data$experiment)
+data$name <- paste0(data$model, "_", data$experiment, "_", data$ensemble)
 data$rownum <- seq_len(nrow(data))
 
 # Correct non-conventional years in CO2 forcing experiments
@@ -44,7 +51,11 @@ co2$year <- replace_year
 # Get rid of unnecessary columns
 co2 <- co2 %>% select(c(-new_year, -File.y, -X1))
 
+# Save outputs to csv
+output <- co2
+write.csv(output, "./outputs/co2_data.csv")
 
+# Plots
 plot <- co2 %>% 
   ggplot(aes(year, value, color = paste(model, experiment), group = paste(model, experiment, ensemble))) +
   geom_line() +

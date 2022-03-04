@@ -1,6 +1,10 @@
-# Processing CMIP6 tas data using Pangeo
-# December 2021
-# Leeya Pressburger
+# ------------------------------------------------------------------------------
+# Program Name: A3.co2.py
+# Authors: Leeya Pressburger
+# Date Last Modified: February 2022
+# Program Purpose: Downloading CMIP6 `co2` data using Pangeo
+# TODO:
+# ------------------------------------------------------------------------------
 
 # Import packages
 import fsspec
@@ -10,7 +14,6 @@ import pandas as pd
 import xarray as xr
 import session_info
 import cftime
-
 
 # Display all columns in dataframe
 pd.set_option('display.max_columns', None)
@@ -114,29 +117,21 @@ def selstr(a, start, stop):
 
 # End of helper functions
 
-# How to create Pangeo .csv - stitches method
 # Get pangeo table - model, variable info + zstore address
 dat = fetch_pangeo_table()
 
 # Accessing data
 # Returns string to Net CDF location
 # Access first for testing, then all for processing
-exps = ['1pctCO2', 'historical', 'ssp585']
+exps = ['historical', 'ssp585']
+mips = ['CMIP', 'ScenarioMIP']
 
-address = dat[(dat['variable_id'] == 'co2') & (dat['experiment_id'].isin(exps))].zstore.iloc[0:3]
-address_all = dat[(dat['variable_id'] == 'co2') & (dat['experiment_id'].isin(exps))].zstore
+address_all = dat[(dat['variable_id'] == 'co2') & (dat['experiment_id'].isin(exps))
+                   & (dat['activity_id'].isin(mips))].zstore
 address_all = address_all.reset_index(drop = True)
 
-# Old progress - most files no longer relevant (experiments we do not need)
-# address_118 = address_all[123:2630]
-# address_119 = address_118[135:2630]
-
-# These are the files that don't work - except now 55-74 aren't working
-nums = [11, 12, 62]
-address_wrong = address_all[nums]
-
 # Process data
-for items in address_all[63:74]:
+for items in address_all:
     # Get from cloud
     x = fetch_nc(items)
     # Get global mean - monthly data - coarsen to annual
@@ -154,9 +149,8 @@ for items in address_all[63:74]:
     # Create dataframe, combine with metadata
     df = pd.DataFrame(data=d)
     out = combine_df(meta, df)
-    name = out["model"][0] + "_" + out["ensemble"][0] + "_" + out["experiment"][0] + "_" + out["frequency"][0]
-    # Save as netcdf and csv files
-    # x.to_netcdf(name + ".nc")
+    name = out["model"][0] + "_"  + out["experiment"][0] + "_" + out["ensemble"][0]
+    # Save as csv file
     out.to_csv(name + ".csv", header=True, index=True)
 
 session_info.show()
