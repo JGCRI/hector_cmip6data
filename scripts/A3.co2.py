@@ -117,23 +117,13 @@ def selstr(a, start, stop):
 
 # End of helper functions
 
-# Get pangeo table - model, variable info + zstore address
-dat = fetch_pangeo_table()
-
-# Accessing data
-# Returns string to Net CDF location
-# Access first for testing, then all for processing
-exps = ['historical', 'ssp585']
-mips = ['CMIP', 'ScenarioMIP']
-
-address_all = dat[(dat['variable_id'] == 'co2') & (dat['experiment_id'].isin(exps))
-                   & (dat['activity_id'].isin(mips))].zstore
-address_all = address_all.reset_index(drop = True)
-
-# Process data
-for items in address_all:
+def get_co2(path):
+    """ For a pangeo file, access CO2 data.
+    :param path:  str of the location of the cmip6 data file on pangeo
+    :return:      csv file of output data
+    """
     # Get from cloud
-    x = fetch_nc(items)
+    x = fetch_nc(path)
     # Get global mean - monthly data - coarsen to annual
     globalmean = global_mean(x)
     annual_mean = globalmean.coarsen(time=12, boundary="trim").mean()
@@ -152,5 +142,22 @@ for items in address_all:
     name = out["model"][0] + "_"  + out["experiment"][0] + "_" + out["ensemble"][0]
     # Save as csv file
     out.to_csv(name + ".csv", header=True, index=True)
+
+# Get pangeo table - model, variable info + zstore address
+dat = fetch_pangeo_table()
+
+# Accessing data
+# Returns string to Net CDF location
+# Access first for testing, then all for processing
+exps = ['historical', 'ssp585']
+mips = ['CMIP', 'ScenarioMIP']
+
+address_all = dat[(dat['variable_id'] == 'co2') & (dat['experiment_id'].isin(exps))
+                   & (dat['activity_id'].isin(mips))].zstore
+address_all = address_all.reset_index(drop = True)
+
+# Process data
+for items in address_all:
+    get_co2(items)
 
 session_info.show()

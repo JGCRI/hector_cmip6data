@@ -123,7 +123,7 @@ def get_tas(path):
     :return: csv file of outputs
     """
     # Get from cloud
-    x = fetch_nc(items)
+    x = fetch_nc(path)
     # Get global mean - monthly data - coarsen to annual
     globalmean = global_mean(x)
     annual_mean = globalmean.coarsen(time=12).mean()
