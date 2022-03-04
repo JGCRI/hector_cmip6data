@@ -42,4 +42,4 @@ data = data.reset_index(drop = True)
 
 # Create name identifier
 data['name'] = data['source_id'] + "/" + data['experiment_id'] + "/" + data['member_id']
-data.to_csv("heatflux_addresses.csv", header=True, index=True)
+data.to_csv("./inputs/heatflux_addresses.csv", header=True, index=True)

@@ -39,8 +39,8 @@ output <- bind_rows(output)
 
 # Add name and row number identifiers
 output$name <- paste0(output$model, "_", 
-                      output$ensemble, "_", 
-                      output$experiment)
+                      output$experiment, "_",
+                      output$ensemble)
 
 output$rownum <- seq_len(nrow(output))
 
@@ -131,5 +131,9 @@ hf_output <- as.numeric(as.charachter(hf_output))
 # Combine list with data frame
 heat_flux <- heat_flux %>%
   mutate(equation = hf_output)
+
+# Save outputs to csv
+output <- heat_flux
+write.csv(output, "./outputs/heatflux_data.csv")
 
 # Data visualization in the corresponding Rmd

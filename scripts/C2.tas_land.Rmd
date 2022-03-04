@@ -110,7 +110,7 @@ Tgav_l_plot <- Tgav_land %>%
   select(c(year, value, model, experiment, ensemble, type))
 
 # Using global data from "processing_tas.R"
-Tgav <- read.csv(paste0(BASE_DIR, "./tas/Global_tas_data.csv"))
+Tgav <- read.csv(paste0(BASE_DIR, "./outputs/global_tas_data.csv"))
 Tgav_plot <- Tgav %>%
   select(year, value, model, experiment, ensemble, type)
 

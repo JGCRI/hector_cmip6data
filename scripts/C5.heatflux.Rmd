@@ -11,10 +11,10 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ## Processing ocean heat flux data from CMIP6
 
-First, I read in the CMIP6 csv files that I accessed with Pangeo in Python and 
-created an output data frame for all six heat flux variables.
+First, read in the CMIP6 csv files and create an output data frame for all six heat flux variables.
 
 ``` {r intro}
+# Import packages
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -59,8 +59,8 @@ head(output)
 
 ```
 
-Next, I added name and row number columns to more easily manipulate the data later.
-I also corrected the years of the CO~2~ forcing experiments to have a start year of 1850. 
+Next, add name and row number columns to more easily manipulate the data later.
+Correct the years of the CO~2~ forcing experiments to have a start year of 1850. 
 
 ``` {r cleanup_data}
 # Add name and row number identifiers to output dataframe
@@ -89,7 +89,7 @@ head(new_output)
 ```
 
 This next part was a bit tricky. Because of Pangeo complications, there weren't the same number of files for each variable (ranging from 919 files to 926 files).
-This chunk tries to isolate only the file names that all six variables share (pardon the hardcoding, I didn't feel like messing with a function/loop).
+This chunk tries to isolate only the file names that all six variables share.
 
 ``` {r names}
 # Need to get common names across six variables
@@ -190,7 +190,7 @@ Now, comparing historical data from CMIP5 to CMIP6.
 
 ``` {r compare}
 # Read in csv
-hectorcal <- read.csv(file.path(BASE_DIR, "./heat_flux/CMIP5_heat_flux_final.csv"))
+hectorcal <- read.csv(file.path(BASE_DIR, "./inputs/CMIP5_heat_flux_final.csv"))
 hc <- hectorcal %>% filter(experiment == "historical")
 
 hist <- heat_flux %>%

@@ -1,7 +1,7 @@
 library(dplyr)
 
 # Import data
-data <- read.csv("heatflux_test.csv")
+data <- read.csv("./inputs/heatflux_test.csv")
 
 # Check that each name has six unique variable_id
 test <- data
