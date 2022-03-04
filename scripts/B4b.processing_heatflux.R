@@ -126,14 +126,15 @@ for(n in seq_len(nrow(heat_flux))){
     heat_flux$hfss[[n]] - heat_flux$hfls[[n]]
 }
 
-hf_output <- as.numeric(as.charachter(hf_output))
+hf_output <- as.numeric(as.character(hf_output))
 
 # Combine list with data frame
 heat_flux <- heat_flux %>%
   mutate(equation = hf_output)
 
 # Save outputs to csv
-output <- heat_flux
+# Force column types to avoid error
+output <- apply(heat_flux, 2, as.character)
 write.csv(output, "./outputs/heatflux_data.csv")
 
 # Data visualization in the corresponding Rmd
