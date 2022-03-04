@@ -1,5 +1,5 @@
 ---
-title: "Processing tas over land"
+title: "Processing surface temperature over land"
 author: "Leeya Pressburger"
 date: "2/28/2022"
 output: html_document
@@ -11,9 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Processing surface temperature over land
 
-I followed a similar process here as I did with regular `tas`. First, I simply read in the appropriate csv files. 
+First, read in the appropriate csv files. 
 
 ``` {r start, message = FALSE, warning = FALSE}
+# Import packages
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -31,14 +32,14 @@ data <- lapply(files, read_csv, col_types = "dccccccdd") %>%
   bind_rows(.id = "File")
 
 # Add name and row number identifier
-data$name <- paste0(data$model, "_", data$ensemble, "_", data$experiment)
+data$name <- paste0(data$model, "_", data$experiment, "_", data$ensemble)
 data$rownum <- seq_len(nrow(data))
 
 head(data)
 
 ```
 
-Next, I cleaned up the data set by shifting the CO2 forcing experiments to be relative to the year 1850. I then created a new dataset where each experiment corresponded to the corrected years.
+Next, clean up the data set by shifting the CO2 forcing experiments to be relative to the year 1850. Create a new dataset where each experiment corresponds to the corrected years.
 
 ``` {r years, message = FALSE}
 # Correct non-conventional years in CO2 forcing experiments
@@ -70,7 +71,7 @@ head(tas)
 
 ```
 
-Next, I calculated `Tgav` by finding the models that had historical runs, calculating their historical averages, and then finding `Tgav` by subtracting the average from `tas`.
+Next, calculate `Tgav` by finding the models that have historical runs, calculating their historical averages, and then finding `Tgav` by subtracting the average from `tas`.
 
 ``` {r Tgav, message = FALSE}
 # Get historical average
@@ -95,12 +96,11 @@ head(Tgav_land)
 
 ```
 
-Below are several graphs with the `land_tas` data. I first compared the models that have `Tgav` values to the `tas` data from global runs. I then plotted a few more specific graphs, including all land models against global, and all land models on their own.
+Below are several graphs with the `land_tas` data. First, compare the models that have `Tgav` values to the `tas` data from global runs. Then, plot a few more specific graphs, including all land models against global, and all land models on their own.
 
 There were a few models that returned unusually low values for `tas`. They are listed below.
 
 ``` {r graphs, fig.height = 9, fig.width = 12}
-
 # Graph tas_global vs tas_land - only for models with Tgav values
 # Assign type identifier
 Tgav_land$type <- "land"

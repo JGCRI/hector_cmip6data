@@ -1,7 +1,15 @@
+# ------------------------------------------------------------------------------
+# Program Name: B1.processing_tas.R
+# Authors: Leeya Pressburger
+# Date Last Modified: December 2021
+# Program Purpose: Processing CMIP6 tas data and calculating Tgav
+# TODO:
+# ------------------------------------------------------------------------------
+
+# Import packages
 library(readr)
 library(dplyr)
 library(ggplot2)
-library(ncdf4)
 library(here)
 
 # Set file paths, based on repo
@@ -25,7 +33,7 @@ data2 <- lapply(files2, read_csv, col_types = "dccccccdd") %>%
 data <- bind_rows(data1, data2)
 
 # Add name and row number identifier
-data$name <- paste0(data$model, "_", data$ensemble, "_", data$experiment)
+data$name <- paste0(data$model, "_", data$experiment, "_", data$ensemble)
 data$rownum <- seq_len(nrow(data))
 
 # Correct non-conventional years in CO2 forcing experiments
@@ -70,6 +78,14 @@ Tgav <- tas %>%
   left_join(historical, by = "model") %>%
   mutate(Tgav = value - avg)
 Tgav$type <- "global"
+
+Tgav_out <- Tgav %>% select(c(rownum, Tgav))
+
+output <- left_join(tas, Tgav_out, by = "rownum")
+output$type <- "global"
+
+# Save outputs to csv
+write.csv(output, "./outputs/global_tas_data.csv")
 
 # Plot results
 plot_t <- Tgav %>% 

@@ -1,6 +1,11 @@
-# Processing CMIP6 surface temperature over land data using Pangeo
-# February 2022
-# Leeya Pressburger
+# ------------------------------------------------------------------------------
+# Program Name: A2.tas_land.py
+# Authors: Leeya Pressburger
+# Date Last Modified: February 2022
+# Program Purpose: Downloading CMIP6 `tas` data using Pangeo, calculating surface
+# temperature over land
+# TODO:
+# ------------------------------------------------------------------------------
 
 # Import packages
 import fsspec
@@ -86,10 +91,8 @@ def selstr(a, start, stop):
 
 def get_land_tas(path):
     """ For a pangeo file, calculate the area weighted surface temperature mean over land.
-
-    :param path:  str zstore path corresponding to a pangeo netcdf
-
-    :return:      pandas.core.frame.DataFrame of area-weighted land tas from a single netcdf file
+    :param path:  str of the location of the cmip6 data file on pangeo
+    :return:      csv file of output data
     """
     ds = xr.open_zarr(fsspec.get_mapper(path), consolidated=True)
     df = pd.read_csv('https://storage.googleapis.com/cmip6/cmip6-zarr-consolidated-stores.csv')
@@ -139,7 +142,7 @@ def get_land_tas(path):
     df = pd.DataFrame(data=d)
     out = combine_df(meta_data, df)
 
-    name = out["model"][0] + "_" + out["ensemble"][0] + "_" + out["experiment"][0] + "_" + out["frequency"][0]
+    name = out["model"][0] + "_" + out["experiment"][0] + "_" + out["ensemble"][0]
     # Save as csv
     out.to_csv(name + ".csv", header=True, index=True)
 
@@ -162,47 +165,3 @@ address_all = address_all.reset_index(drop=True)
 for items in address_all[1857:1887]:
     get_land_tas(items)
 
-
-# Note failing models and (most) locations
-skips = [# BCC-CSM2-MR
-        35, 36, 42, 43, 44, 85, 86, 87, 88,
-        # AWI-CM-1-1-MR
-        471, 472, 473, 474, 475, 476, 477, 478, 479, 688, 689,
-        # NUIST/NESM3
-         514, 515, 600, 601, 604, 608, 610, 611,
-        # MCM-UA-1-0
-        602, 603, 605, 606, 607, 609,
-        #NorESM2-LM
-        628, 699, 700, 701, 705, 710, 713, 714, 715,
-        940,
-        # FGOALS-g3
-        629, 630, 631, 756, 757, 758, 759, 760, 761, 762,
-        763, 764, 765, 766, 767, 775, 776, 787,
-        1161, 1338, 1347, 1348, 1349,
-        #FGOALS-f3-L
-        684, 685, 686, 687, 690, 691, 692,
-        1193, 1194, 1195,
-        # KACE-1-0-G
-        658, 659, 662, 678, 679, 680, 681, 682,
-        768, 769, 770, 771, 772, 773,
-        # GISS-E2-2-G
-        721, 722, 723,
-        # IITM-ESM
-        751, 777,
-        # FIO-ESM-2-0
-        778, 779, 780, 781, 782, 783, 784, 785, 786,
-        956, 957, 958, 959, 960, 961,
-        # THU/CIESM
-        1186,
-        # CCCR-IITM
-        1335, 1336, 1337, 1386,
-        # EC-Earth3-Veg-LR
-        1409,
-        # EC-Earth3
-        1412, 1413, 1417,
-        # IPSL-CM5A2-INCA
-        1414, 1415, 1416
-        # ICON-ESM-LR
-        # KIOST-ESM]
-
-1484 - 1546

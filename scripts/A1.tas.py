@@ -1,6 +1,10 @@
-# Processing CMIP6 tas data using Pangeo
-# December 2021
-# Leeya Pressburger
+# ------------------------------------------------------------------------------
+# Program Name: A1.tas.py
+# Authors: Leeya Pressburger
+# Date Last Modified: February 2022
+# Program Purpose: Downloading CMIP6 `tas` data using Pangeo
+# TODO:
+# ------------------------------------------------------------------------------
 
 # Import packages
 import fsspec
@@ -8,8 +12,10 @@ import intake
 import numpy as np
 import pandas as pd
 import xarray as xr
+import session_info
+import cftime
 
-# Display all columns in dataframe
+# Setting to display all columns in dataframe
 pd.set_option('display.max_columns', None)
 
 # Helper functions from stitches project - data processing
@@ -111,38 +117,11 @@ def selstr(a, start, stop):
 
 # End of helper functions
 
-# How to create Pangeo .csv - stitches method
-# Get pangeo table - model, variable info + zstore address
-dat = fetch_pangeo_table()
-dat = pd.read_csv("pangeo_table.csv")
-
-# Accessing data
-# Returns string to Net CDF location
-# Access first for testing, then all for processing
-address = dat[(dat['variable']=='tas') & (dat['domain'] == 'Amon')].zstore.iloc[0]
-address_all = dat[(dat['variable']=='tas') & (dat['domain'] == 'Amon')].zstore
-
-# Get identifiers for each address
-# Helpful for tagging
-mod = dat['model']
-exp = dat['experiment']
-ens = dat['ensemble']
-var = dat["variable"]
-dom = dat["domain"]
-names = mod + "_" + exp + "_" + ens + "_" + var + "_" + dom
-
-# Combine identifiers with address and clean up data
-tdata = pd.concat([mod, exp, ens, var, dom, address_all, names], axis = 1)
-tdata = tdata.dropna()
-tdata.columns = ['model', 'experiment', 'ensemble', 'variable', 'domain', 'address', 'names']
-tdata = tdata.reset_index(drop = True)
-
-# Remove runs that aren't working
-# Error message: Variable 'time_bnds' has conflicting _FillValue (nan) and missing_value (1.0000000200408773e+20). Cannot encode data.
-tdata = tdata[tdata["model"] != "MCM-UA-1-0"]
-
-# Process data
-for items in tdata["address"]:
+def get_tas(path):
+    """
+    :param path: str of the location of the cmip6 data file on pangeo
+    :return: csv file of outputs
+    """
     # Get from cloud
     x = fetch_nc(items)
     # Get global mean - monthly data - coarsen to annual
@@ -160,8 +139,25 @@ for items in tdata["address"]:
     # Create dataframe, combine with metadata
     df = pd.DataFrame(data=d)
     out = combine_df(meta, df)
-    name = out["model"][0] + "_" + out["ensemble"][0] + "_" + out["experiment"][0]
-    # Save as netcdf and csv files
-    x.to_netcdf(name + ".nc")
+    name = out["model"][0] + "_" + out["experiment"][0] + "_" + out["ensemble"][0]
+    # Save as csv files
     out.to_csv(name + ".csv", header=True, index=True)
 
+# Get pangeo table - model, variable info + zstore address
+dat = fetch_pangeo_table()
+
+# Accessing data
+# Pull out specifics
+mips = ['CMIP', 'ScenarioMIP']
+exps = ['1pctCO2', 'abrupt-4xCO2', 'abrupt-2xCO2', 'esm-hist', 'esm-ssp585', 'ssp119',
+        'ssp126', 'ssp245', 'ssp370', 'ssp434', 'ssp460', 'ssp585']
+
+# Get zstore addresses for desired files
+address_all = dat[(dat['variable']=='tas') & (dat['domain'] == 'Amon') &
+                  (dat['activity_id'].isin(mips)) & & (dat['experiment_id'].isin(exps)].zstore
+
+address_all = address_all.reset_index(drop=True)
+
+# Process data
+for items in address_all:
+    get_tas(items)
