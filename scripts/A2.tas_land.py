@@ -165,3 +165,4 @@ address_all = address_all.reset_index(drop=True)
 for items in address_all[1857:1887]:
     get_land_tas(items)
 
+session_info.show()
