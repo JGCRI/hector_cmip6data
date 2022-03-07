@@ -149,7 +149,7 @@ tas_land_plot <- tas %>%
 
 # Clean up output data, save csv
 output <- output %>%
-  select(c(model, experiment, ensemble, variable, units, year, value, Tgav, type)) %>%
+  select(c(model, experiment, ensemble, variable, year, value, units, Tgav, type)) %>%
   filter(!model %in% low_models)
 
 write.csv(output, "./outputs/cmip6_annual_tas_over_land.csv", row.names = FALSE)

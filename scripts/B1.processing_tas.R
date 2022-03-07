@@ -86,7 +86,7 @@ output$type <- "global"
 
 # Clean up output data
 output <- output %>%
-  select(c(model, experiment, ensemble, variable, units, year, value, Tgav, type))
+  select(c(model, experiment, ensemble, variable, year, value, units, Tgav, type))
 
 # Save outputs to csv
 write.csv(output, "./outputs/cmip6_annual_tas_global.csv", row.names = FALSE)
