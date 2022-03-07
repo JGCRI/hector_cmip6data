@@ -1,0 +1,241 @@
+---
+title: "heatflux.Rmd"
+author: "Leeya Pressburger"
+date: "March 2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## Processing ocean heat flux data from CMIP6
+This RMarkdown walks through processing the six heat flux variables and arriving at the weighted average heat flux over the ocean.
+
+First, read in the CMIP6 csv files and create an output data frame for all six heat flux variables.
+
+``` {r intro}
+# Import packages
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(here)
+
+BASE_DIR <- here::here()
+
+# Variables of interest
+vars <- c("hfls", "hfss", "rlds", "rlus", "rsds", "rsus")
+
+# Function to get lists of file paths for each of the six variables
+get_path <- function(var){
+  assign(x = paste0("path_", var), 
+         value = file.path(BASE_DIR, "heat_flux", var))
+}
+
+# Access file paths for specified variables
+paths <- lapply(vars, get_path)
+paths <- c(paths[[1]], paths[[2]], paths[[3]], paths[[4]], paths[[5]], paths[[6]])
+
+# Function to list the files for each path specified
+list_files <- function(path){
+  list.files(path = path, pattern = "*.csv", full.names = TRUE)
+}
+
+# List files for specified paths
+files <- lapply(paths, list_files)
+
+# For each file in each file path for each variable, read in the csv data
+# Force column types
+output <- list()
+for(num in 1:length(files)){
+  output[[num]] <- lapply(files[[num]], read_csv, col_types = "dccccccdd") %>%
+    bind_rows(.id = "File")
+}
+
+# Create data frame
+output <- bind_rows(output)
+
+head(output)
+
+```
+
+Next, add name and row number columns to more easily manipulate the data later.
+Correct the years of the CO~2~ forcing experiments to have a start year of 1850. 
+
+``` {r cleanup_data}
+# Add name and row number identifiers to output dataframe
+output$name <- paste0(output$model, "_", 
+                      output$ensemble, "_", 
+                      output$experiment)
+
+output$rownum <- seq_len(nrow(output))
+
+# Correct non-conventional years in CO2 forcing experiments
+# Scale to start at 1850
+output1 <- output %>%
+  select("rownum", "year", "File") %>%
+  filter(year < 1850 | year > 2500) %>%
+  group_by(File) %>%
+  mutate(start_year = year[1],
+         scale = year - start_year,
+         new_year = 1850 + scale) %>%
+  select("rownum", "new_year")
+
+# Combine with original dataframe
+new_output <- left_join(output, output1, by = "rownum")
+
+head(new_output)
+
+```
+
+This next part was a bit tricky. Because of Pangeo complications, there weren't the same number of files for each variable (ranging from 919 files to 926 files).
+This chunk tries to isolate only the file names that all six variables share.
+
+``` {r names}
+# Need to get common names across six variables
+names <- unique(new_output$name)
+
+# How many model/experiment/ensemble combinations are there for each variable?
+group_by_var <- new_output %>%
+  group_by(variable) %>%
+  summarize(names = unique(name)) %>%
+  mutate(count = length(names))
+
+counts <- group_by_var %>% summarize(variable, count) %>% unique()
+
+# Which variables have the most and least names?
+most_names <- group_by_var %>% filter(variable == "rsds")
+hfls_names <- group_by_var %>% filter(variable == "hfls")
+hfss_names <- group_by_var %>% filter(variable == "hfss")
+rlds_names <- group_by_var %>% filter(variable == "rlds")
+rlus_names <- group_by_var %>% filter(variable == "rlus")
+rsus_names <- group_by_var %>% filter(variable == "rsus")
+
+# Extract common names and names that are missing
+common_names <- left_join(most_names, hfls_names, by = "names")
+common_names <- left_join(common_names, hfss_names, by = "names")
+common_names <- left_join(common_names, rlds_names, by = "names")
+common_names <- left_join(common_names, rlus_names, by = "names")
+common_names <- left_join(common_names, rsus_names, by = "names")
+common_names <- drop_na(common_names)
+
+good_names <- common_names$names
+
+# Manually remove a name that is problematic later
+good_names <- good_names[-337]
+
+```
+
+This chunk gets ready to manipulate the data to do the heat flux calculation.
+It reorganizes the output data frame and selects only the necessary columns.
+
+``` {r sort_columns}
+# Reorganize data frame
+data <- new_output %>%
+  # Remove pesky NA variable
+  filter(variable != "NA") %>%
+  # Remove missing names
+  filter(name %in% good_names) %>%
+  # Organize
+  select(-c("X1", "x", "File.x", "File.y")) %>%
+  relocate(c("rownum", "name"), .before = "variable")
+
+# Problem - need to make one year column with "year" and "new_year"
+# If new_year has an NA, replace it with year, otherwise leave as is
+replace_year <- ifelse(is.na(data$new_year), 
+                data$year, 
+                data$new_year)
+data$year <- replace_year
+# Get rid of new_year column
+data <- data %>% select(-new_year)
+
+head(data)
+```
+
+Now for the actual calculation.
+
+``` {r equation}
+# Heat flux equation
+# rsds - rsus + rlds - rlus - hfss - hfls
+
+# Select important columns
+heat_flux <- data %>% select(c(model, experiment, ensemble, variable, year, value))
+
+# Reshape data
+heat_flux <- heat_flux %>%
+  group_by(model, experiment, ensemble, year) %>%
+  pivot_wider(names_from = variable, values_from = value, values_fn = list) %>%
+  ungroup()
+
+# Compute equation
+hf_output <- list()
+for(n in seq_len(nrow(heat_flux))){
+  hf_output[[n]] <- heat_flux$rsds[[n]] - heat_flux$rsus[[n]] + 
+    heat_flux$rlds[[n]] - heat_flux$rlus[[n]] - 
+    heat_flux$hfss[[n]] - heat_flux$hfls[[n]]
+}
+
+# Combine list with data frame
+heat_flux <- heat_flux %>%
+  mutate(equation = as.numeric(as.character(hf_output)),
+         units = unique(data$units))
+
+head(heat_flux)
+
+```
+
+Now, comparing historical data from CMIP5 to CMIP6.
+
+``` {r compare}
+# Read in csv
+hectorcal <- read.csv(file.path(BASE_DIR, "./inputs/comp_data/CMIP5_heat_flux_final.csv"))
+hc <- hectorcal %>% filter(experiment == "historical")
+
+hist <- heat_flux %>%
+  filter(experiment == "esm-hist") %>%
+  mutate(value = as.numeric(unlist(equation)))
+
+# CMIP6
+summary(hist$value)
+
+#CMIP5
+summary(hc$value)
+
+```
+
+Plotting differences in CMIP5/6
+
+``` {r plot_diff}
+# Select relevant columns, create one dataset
+cmip6 <- hist %>% 
+  select(year, model, value) %>%
+  mutate(cmip = "CMIP6")
+
+cmip5 <- hc %>% 
+  select(year, model, value) %>%
+  mutate(cmip = "CMIP5")
+
+mips <- rbind(cmip6, cmip5)
+
+# Plot
+ggplot(mips, aes(year, value, color = cmip, group = model)) +
+  geom_line() +
+  labs(x = "Year",
+       y = "Value",
+       title = "Ocean heat flux in CMIP5 vs CMIP6")
+
+```
+
+``` {r plot_out}
+# Plot ocean heat flux over time
+heat_flux %>%
+  ggplot(aes(year, equation, color = model, group = paste0(model, experiment, ensemble))) +
+  geom_line() +
+  facet_wrap(~experiment, scales = "free") +  
+  labs(x = "Year",
+       y = "Value",
+       title = "Ocean heat flux")
+
+
+```
