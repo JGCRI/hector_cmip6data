@@ -115,7 +115,10 @@ data <- new_output %>%
 replace_year <- ifelse(is.na(data$new_year), 
                 data$year, 
                 data$new_year)
+
+# Combine with original dataframe
 data$year <- replace_year
+
 # Get rid of new_year column
 data <- data %>% select(-new_year)
 
@@ -141,13 +144,49 @@ for(n in seq_len(nrow(heat_flux))){
 
 # Combine list with data frame
 heat_flux <- heat_flux %>%
-  mutate(equation = hf_output,
+  mutate(equation = as.numeric(as.character(hf_output)),
          units = unique(data$units))
 
 # Save outputs to csv
 # Force column types to avoid error
 output <- apply(heat_flux, 2, as.character)
 
-write.csv(output, "./outputs/cmip6_annual_ocean_heat_flux.csv", row.names = FALSE)
+write.csv(output, "./outputs/CMIP6_annual_ocean_heat_flux.csv", row.names = FALSE)
 
-# Data visualization in the corresponding Rmd
+# Data visualization
+
+# Comparing historical data from CMIP5 to CMIP6
+# Read in csv
+hectorcal <- read.csv("./inputs/comp_data/CMIP5_heat_flux_final.csv")
+hc <- hectorcal %>% filter(experiment == "historical")
+
+hist <- heat_flux %>%
+  filter(experiment == "esm-hist") %>%
+  mutate(value = as.numeric(unlist(equation)))
+
+# Select relevant columns, create one dataset
+cmip6 <- hist %>% 
+  select(year, model, value) %>%
+  mutate(cmip = "CMIP6")
+
+cmip5 <- hc %>% 
+  select(year, model, value) %>%
+  mutate(cmip = "CMIP5")
+
+mips <- rbind(cmip6, cmip5)
+
+# Plot
+ggplot(mips, aes(year, value, color = cmip, group = model)) +
+  geom_line() +
+  labs(x = "Year",
+       y = "Value",
+       title = "Ocean heat flux in CMIP5 vs CMIP6")
+
+# Plot ocean heat flux over time
+heat_flux %>%
+  ggplot(aes(year, equation, color = model, group = paste0(model, experiment, ensemble))) +
+  geom_line() +
+  facet_wrap(~experiment, scales = "free") +  
+  labs(x = "Year",
+       y = "Value",
+       title = "Ocean heat flux")

@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 # Program Name: A3.co2.py
 # Authors: Leeya Pressburger
-# Date Last Modified: February 2022
+# Date Last Modified: March 2022
 # Program Purpose: Downloads CMIP6 `co2` data using Pangeo, coarsens monthly data
 # to an annual mean
 # Outputs: One csv file with annual co2 data for every specified CMIP6

@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 # Program Name: A4f.rsus.py
 # Authors: Leeya Pressburger
-# Date Last Modified: February 2022
+# Date Last Modified: March 2022
 # Program Purpose: Downloads CMIP6 `rsus` data using Pangeo, coarsens monthly data
 # to an annual mean, calculates weighted average value over the ocean
 # Outputs: One csv file with annual `rsus` data for every specified CMIP6

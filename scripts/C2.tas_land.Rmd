@@ -1,7 +1,7 @@
 ---
 title: "Processing surface temperature over land"
 author: "Leeya Pressburger"
-date: "2/28/2022"
+date: "March 2022"
 output: html_document
 ---
 

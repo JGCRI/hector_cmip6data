@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 # Program Name: A1.tas.py
 # Authors: Leeya Pressburger
-# Date Last Modified: February 2022
+# Date Last Modified: March 2022
 # Program Purpose: Downloads CMIP6 `tas` data using Pangeo, coarsens monthly data
 # to an annual mean
 # Outputs: One csv file with annual, global tas data for every specified CMIP6

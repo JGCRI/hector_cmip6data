@@ -1,7 +1,7 @@
 ---
 title: "heatflux.Rmd"
 author: "Leeya Pressburger"
-date: "2/18/2022"
+date: "March 2022"
 output: html_document
 ---
 
@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 ## Processing ocean heat flux data from CMIP6
+This RMarkdown walks through processing the six heat flux variables and arriving at the weighted average heat flux over the ocean.
 
 First, read in the CMIP6 csv files and create an output data frame for all six heat flux variables.
 
@@ -159,12 +160,12 @@ Now for the actual calculation.
 # rsds - rsus + rlds - rlus - hfss - hfls
 
 # Select important columns
-heat_flux <- data %>% select(c(name, model, experiment, year, variable, value))
+heat_flux <- data %>% select(c(model, experiment, ensemble, variable, year, value))
 
 # Reshape data
 heat_flux <- heat_flux %>%
-  group_by(name, year) %>%
-  pivot_wider(names_from = variable, values_from = value) %>%
+  group_by(model, experiment, ensemble, year) %>%
+  pivot_wider(names_from = variable, values_from = value, values_fn = list) %>%
   ungroup()
 
 # Compute equation
@@ -175,12 +176,10 @@ for(n in seq_len(nrow(heat_flux))){
     heat_flux$hfss[[n]] - heat_flux$hfls[[n]]
 }
 
-# Make output numeric, not a list
-hf_output <- as.numeric(as.character(hf_output))
-
-# Combine output with data frame
+# Combine list with data frame
 heat_flux <- heat_flux %>%
-  mutate(value = hf_output)
+  mutate(equation = as.numeric(as.character(hf_output)),
+         units = unique(data$units))
 
 head(heat_flux)
 
@@ -190,11 +189,12 @@ Now, comparing historical data from CMIP5 to CMIP6.
 
 ``` {r compare}
 # Read in csv
-hectorcal <- read.csv(file.path(BASE_DIR, "./inputs/CMIP5_heat_flux_final.csv"))
+hectorcal <- read.csv(file.path(BASE_DIR, "./inputs/comp_data/CMIP5_heat_flux_final.csv"))
 hc <- hectorcal %>% filter(experiment == "historical")
 
 hist <- heat_flux %>%
-  filter(experiment == "esm-hist")
+  filter(experiment == "esm-hist") %>%
+  mutate(value = as.numeric(unlist(equation)))
 
 # CMIP6
 summary(hist$value)
@@ -224,5 +224,18 @@ ggplot(mips, aes(year, value, color = cmip, group = model)) +
   labs(x = "Year",
        y = "Value",
        title = "Ocean heat flux in CMIP5 vs CMIP6")
+
+```
+
+``` {r plot_out}
+# Plot ocean heat flux over time
+heat_flux %>%
+  ggplot(aes(year, equation, color = model, group = paste0(model, experiment, ensemble))) +
+  geom_line() +
+  facet_wrap(~experiment, scales = "free") +  
+  labs(x = "Year",
+       y = "Value",
+       title = "Ocean heat flux")
+
 
 ```
