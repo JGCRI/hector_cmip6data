@@ -1,3 +1,12 @@
+# ------------------------------------------------------------------------------
+# Program Name: B4b.processing_heatflux.R
+# Authors: Leeya Pressburger
+# Date Last Modified: March 2022
+# Program Purpose: Processing CMIP6 CO2 data
+# TODO:
+# ------------------------------------------------------------------------------
+
+# Import packages
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -97,7 +106,7 @@ data <- new_output %>%
   select(-c("X1", "x", "File.x", "File.y")) %>%
   relocate(c("rownum", "name"), .before = "variable")
 
-# Problem - need to make one year column with "year" and "new_year"
+# Need to make one year column with "year" and "new_year"
 # If new_year has an NA, replace it with year, otherwise leave as is
 replace_year <- ifelse(is.na(data$new_year), 
                 data$year, 
@@ -110,11 +119,11 @@ data <- data %>% select(-new_year)
 # rsds - rsus + rlds - rlus - hfss - hfls
 
 # Select important columns
-heat_flux <- data %>% select(c(name, year, variable, value))
+heat_flux <- data %>% select(c(model, experiment, ensemble, variable, year, value))
 
 # Reshape data
 heat_flux <- heat_flux %>%
-  group_by(name, year) %>%
+  group_by(model, experiment, ensemble, year) %>%
   pivot_wider(names_from = variable, values_from = value, values_fn = list) %>%
   ungroup()
 
@@ -126,15 +135,15 @@ for(n in seq_len(nrow(heat_flux))){
     heat_flux$hfss[[n]] - heat_flux$hfls[[n]]
 }
 
-hf_output <- as.numeric(as.character(hf_output))
-
 # Combine list with data frame
 heat_flux <- heat_flux %>%
-  mutate(equation = hf_output)
+  mutate(equation = hf_output,
+         units = unique(data$units))
 
 # Save outputs to csv
 # Force column types to avoid error
 output <- apply(heat_flux, 2, as.character)
-write.csv(output, "./outputs/heatflux_data.csv")
+
+write.csv(output, "./outputs/cmip6_annual_ocean_heat_flux.csv", row.names = FALSE)
 
 # Data visualization in the corresponding Rmd

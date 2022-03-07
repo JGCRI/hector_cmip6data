@@ -51,9 +51,12 @@ co2$year <- replace_year
 # Get rid of unnecessary columns
 co2 <- co2 %>% select(c(-new_year, -File.y, -X1))
 
+# Clean up output data
+output <- co2 %>%
+  select(c(model, experiment, ensemble, variable, year, value, units))
+
 # Save outputs to csv
-output <- co2
-write.csv(output, "./outputs/co2_data.csv")
+write.csv(output, "./outputs/cmip6_annual_co2.csv", row.names = FALSE)
 
 # Plots
 plot <- co2 %>% 

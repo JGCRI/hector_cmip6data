@@ -79,7 +79,11 @@ Tgav_out <- Tgav %>% select(c(rownum, Tgav))
 output <- left_join(tas, Tgav_out, by = "rownum")
 output$type = "land"
 
-write.csv(output, "./outputs/land_tas_data.csv")
+# Clean up output data
+output <- output %>%
+  select(c(model, experiment, ensemble, variable, units, year, value, Tgav, type))
+
+write.csv(output, "./outputs/cmip6_annual_tas_over_land.csv", row.names = FALSE)
 
 # Data visualization
 # Graph tas_global vs tas_land - only for models with Tgav values

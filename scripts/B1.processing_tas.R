@@ -84,11 +84,15 @@ Tgav_out <- Tgav %>% select(c(rownum, Tgav))
 output <- left_join(tas, Tgav_out, by = "rownum")
 output$type <- "global"
 
+# Clean up output data
+output <- output %>%
+  select(c(model, experiment, ensemble, variable, units, year, value, Tgav, type))
+
 # Save outputs to csv
-write.csv(output, "./outputs/global_tas_data.csv")
+write.csv(output, "./outputs/cmip6_annual_tas_global.csv", row.names = FALSE)
 
 # Plot results
-plot_t <- Tgav %>% 
+plot_t <- output %>% 
   ggplot(aes(year, value, color = model, group = paste(model, experiment, ensemble))) +
   geom_line() +
   facet_wrap(~experiment, scales = "free_x") +
@@ -98,9 +102,9 @@ plot_t <- Tgav %>%
   theme_minimal()
 
 # Filter for particular experiments
-co2exp <- Tgav %>% filter(experiment %in% c("1pctCO2", "abrupt-2xCO2", "abrupt-4xCO2"))
-hist <- Tgav %>% filter(experiment == "historical")
-ssps <- Tgav %>% filter(experiment %in% c("ssp119", "ssp126", "ssp245", "ssp370", 
+co2exp <- output %>% filter(experiment %in% c("1pctCO2", "abrupt-2xCO2", "abrupt-4xCO2"))
+hist <- output %>% filter(experiment == "historical")
+ssps <- output %>% filter(experiment %in% c("ssp119", "ssp126", "ssp245", "ssp370", 
                                           "ssp434", "ssp460", "ssp534-over", "ssp585"))
 # Plot just particular experiments
 plot_co2 <- co2exp %>%
