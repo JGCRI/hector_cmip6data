@@ -73,17 +73,11 @@ Tgav_land <- tas %>%
   left_join(historical, by = "model") %>%
   mutate(Tgav = value - avg)
 
-Tgav_out <- Tgav %>% select(c(rownum, Tgav))
+Tgav_out <- Tgav_land %>% select(c(rownum, Tgav))
 
 # Save outputs
 output <- left_join(tas, Tgav_out, by = "rownum")
 output$type = "land"
-
-# Clean up output data
-output <- output %>%
-  select(c(model, experiment, ensemble, variable, units, year, value, Tgav, type))
-
-write.csv(output, "./outputs/cmip6_annual_tas_over_land.csv", row.names = FALSE)
 
 # Data visualization
 # Graph tas_global vs tas_land - only for models with Tgav values
@@ -95,13 +89,13 @@ Tgav_l_plot <- Tgav_land %>%
   select(c(year, value, model, experiment, ensemble, type))
 
 # Using Tgav from "processing_tas.R"
-Tgav <- read.csv("./outputs/global_tas_data.csv")
+Tgav <- read.csv("./outputs/cmip6_annual_tas_global.csv")
 Tgav_plot <- Tgav %>%
   select(year, value, model, experiment, ensemble, type)
 
 plot_data <- bind_rows(Tgav_l_plot, Tgav_plot)
 
-plot_data %>%
+Tgav_models_compare <- plot_data %>%
   # This model has an abnormally low tas_land value
   filter(model != "MPI-ESM1-2-LR") %>%
   ggplot(aes(year, value, color = type, 
@@ -129,7 +123,7 @@ low_models <- tas %>%
   filter(value < 200)
 low_models <- unique(low_models$model)
 
-plot_all_data %>%
+all_models_compare <- plot_all_data %>%
   # These model have abnormally low tas_land values
   filter(!model %in% low_models) %>%
   ggplot(aes(year, value, color = type, 
@@ -142,7 +136,7 @@ plot_all_data %>%
   theme_minimal()
 
 # Plot just tas_land models
-tas %>%
+tas_land_plot <- tas %>%
   filter(!model %in% low_models) %>%
   ggplot(aes(year, value, color = model, 
              group = paste0(model, experiment, ensemble))) +
@@ -153,3 +147,9 @@ tas %>%
        title = "CMIP6 runs - tas over time") +
   theme_minimal()
 
+# Clean up output data, save csv
+output <- output %>%
+  select(c(model, experiment, ensemble, variable, units, year, value, Tgav, type)) %>%
+  filter(!model %in% low_models)
+
+write.csv(output, "./outputs/cmip6_annual_tas_over_land.csv", row.names = FALSE)
