@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Processing surface temperature over land
+This RMarkdown walks through the code and calculations in `./scripts/B2.processing_tas_land.R`.
 
 First, read in the appropriate csv files. 
 
@@ -110,7 +111,7 @@ Tgav_l_plot <- Tgav_land %>%
   select(c(year, value, model, experiment, ensemble, type))
 
 # Using global data from "processing_tas.R"
-Tgav <- read.csv(paste0(BASE_DIR, "./outputs/global_tas_data.csv"))
+Tgav <- read.csv(paste0(BASE_DIR, "/outputs/cmip6_annual_tas_global.csv"))
 Tgav_plot <- Tgav %>%
   select(year, value, model, experiment, ensemble, type)
 
