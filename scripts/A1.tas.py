@@ -2,7 +2,10 @@
 # Program Name: A1.tas.py
 # Authors: Leeya Pressburger
 # Date Last Modified: February 2022
-# Program Purpose: Downloading CMIP6 `tas` data using Pangeo
+# Program Purpose: Downloads CMIP6 `tas` data using Pangeo, coarsens monthly data
+# to an annual mean
+# Outputs: One csv file with annual, global tas data for every specified CMIP6
+# model, experiment, and ensemble rus saved as "model_experiment_ensemble.csv"
 # TODO:
 # ------------------------------------------------------------------------------
 
@@ -140,7 +143,7 @@ def get_tas(path):
     df = pd.DataFrame(data=d)
     out = combine_df(meta, df)
     name = out["model"][0] + "_" + out["experiment"][0] + "_" + out["ensemble"][0]
-    # Save as csv files
+    # Save as csv
     out.to_csv(name + ".csv", header=True, index=True)
 
 # Get pangeo table - model, variable info + zstore address

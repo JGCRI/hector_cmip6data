@@ -2,11 +2,12 @@
 # Program Name: A4.heatflux_preprocessing.py
 # Authors: Leeya Pressburger
 # Date Last Modified: February 2022
-# Program Purpose: Accessing netCDF file locations for all heatflux variables
-# Additional processing is required in R
-# ./scripts/B4.heatflux_preprocessing.R
+# Program Purpose: Accessing netCDF file locations for all heatflux variables:
+# hfls, hfss, rlds, rlus, rsds, rsus
+# Additional processing is required in R: ./scripts/B4a.heatflux_preprocessing.R
 # TODO:
 # ------------------------------------------------------------------------------
+
 # Import packages
 import intake
 import pandas as pd

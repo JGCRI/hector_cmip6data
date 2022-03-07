@@ -2,8 +2,10 @@
 # Program Name: A2.tas_land.py
 # Authors: Leeya Pressburger
 # Date Last Modified: February 2022
-# Program Purpose: Downloading CMIP6 `tas` data using Pangeo, calculating surface
-# temperature over land
+# Program Purpose: Downloads CMIP6 `tas` data using Pangeo, coarsens monthly data
+# to an annual mean, calculates surface temperature over land
+# Outputs: One csv file with annual tas-over-land data for every specified CMIP6
+# model, experiment, and ensemble run saved as "model_experiment_ensemble.csv"
 # TODO:
 # ------------------------------------------------------------------------------
 

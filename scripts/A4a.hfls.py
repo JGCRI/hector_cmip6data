@@ -2,7 +2,10 @@
 # Program Name: A4a.hfls.py
 # Authors: Leeya Pressburger
 # Date Last Modified: February 2022
-# Program Purpose: Downloading CMIP6 `hfls` data using Pangeo
+# Program Purpose: Downloads CMIP6 `hfls` data using Pangeo, coarsens monthly data
+# to an annual mean, calculates weighted average value over the ocean
+# Outputs: One csv file with annual `hfls` data for every specified CMIP6
+# model, experiment, and ensemble run saved as "model_experiment_ensemble.csv"
 # TODO:
 # ------------------------------------------------------------------------------
 # Import packages
@@ -124,8 +127,7 @@ def get_hfls(path):
     out = combine_df(meta_data, df)
 
     name = out["model"][0] + "_" + out["experiment"][0] + "_" + out["ensemble"][0]
-    # Save as netcdf and csv files
-    # x.to_netcdf(name + ".nc")
+    # Save as csv
     out.to_csv("./hfls/" + name + ".csv", header=True, index=True)
 
 # Accessing data

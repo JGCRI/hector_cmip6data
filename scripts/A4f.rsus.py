@@ -2,7 +2,10 @@
 # Program Name: A4f.rsus.py
 # Authors: Leeya Pressburger
 # Date Last Modified: February 2022
-# Program Purpose: Downloading CMIP6 `rsus` data using Pangeo
+# Program Purpose: Downloads CMIP6 `rsus` data using Pangeo, coarsens monthly data
+# to an annual mean, calculates weighted average value over the ocean
+# Outputs: One csv file with annual `rsus` data for every specified CMIP6
+# model, experiment, and ensemble run saved as "model_experiment_ensemble.csv"
 # TODO:
 # ------------------------------------------------------------------------------
 
@@ -125,8 +128,7 @@ def get_rsus(path):
     out = combine_df(meta_data, df)
 
     name = out["model"][0] + out["experiment"][0] + "_" + out["ensemble"][0]
-    # Save as netcdf and csv files
-    # x.to_netcdf(name + ".nc")
+    # Save as csv
     out.to_csv("./rsus/" + name + ".csv", header=True, index=True)
 
 

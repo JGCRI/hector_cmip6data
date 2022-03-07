@@ -2,7 +2,10 @@
 # Program Name: A4d.rlus.py
 # Authors: Leeya Pressburger
 # Date Last Modified: February 2022
-# Program Purpose: Downloading CMIP6 `rlus` data using Pangeo
+# Program Purpose: Downloads CMIP6 `rlus` data using Pangeo, coarsens monthly data
+# to an annual mean, calculates weighted average value over the ocean
+# Outputs: One csv file with annual `rlus` data for every specified CMIP6
+# model, experiment, and ensemble run saved as "model_experiment_ensemble.csv"
 # TODO:
 # ------------------------------------------------------------------------------
 
