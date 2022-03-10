@@ -68,7 +68,7 @@ plot <- co2 %>%
   facet_wrap(~experiment, scales = "free_x") +
   labs(x = "Year",
        y = "mol mol-1",
-       title = "Atmospheric CO2 over time") +
+       title = "Atmospheric CO2") +
   theme_minimal()
 
 no_facet <- co2 %>%
@@ -76,6 +76,6 @@ no_facet <- co2 %>%
   geom_line() +
   labs(x = "Year",
        y = "mol mol-1",
-       title = "Atmospheric CO2 over time") +
+       title = "Atmospheric CO2") +
   theme_minimal()
 

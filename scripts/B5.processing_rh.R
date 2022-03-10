@@ -77,5 +77,5 @@ rh_plot <- ggplot(rh, aes(year, value, color = model,
   geom_line() +
   facet_wrap(~experiment, scales = "free") +
   labs(x = "Year",
-       y = "Pg",
+       y = "Pg C",
        title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux")

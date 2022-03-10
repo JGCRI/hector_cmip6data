@@ -84,11 +84,12 @@ models <- historical$model
 Tgav <- tas %>%
   filter(model %in% models, !experiment == "historical") %>%
   left_join(historical, by = "model") %>%
-  mutate(Tgav = value - avg)
-Tgav$type <- "global"
+  mutate(value = value - avg,
+         variable = "Tgav",
+         units = "deg C")
 
 # Join Tgav to original data set, but only for the rows/models that have historical data
-Tgav_out <- Tgav %>% select(c(rownum, Tgav))
+Tgav_out <- Tgav %>% select(rownum)
 
 output <- left_join(tas, Tgav_out, by = "rownum")
 output$type <- "global"
@@ -107,8 +108,8 @@ plot_t <- output %>%
   geom_line() +
   facet_wrap(~experiment, scales = "free_x") +
   labs(x = "Year",
-       y = "tas",
-       title = "CMIP6 runs - tas over time") +
+       y = "K",
+       title = "Global surface temperature") +
   theme_minimal()
 
 # Filter for particular experiments
@@ -121,8 +122,8 @@ plot_co2 <- co2exp %>%
   ggplot(aes(year, value, color = experiment, group = paste(model, experiment, ensemble))) +
   geom_line() +
   labs(x = "Year",
-       y = "tas",
-       title = "CMIP6 runs - tas over time") +
+       y = "K",
+       title = "Global surface temperature") +
   facet_wrap(~model) +
   theme_minimal()
 
@@ -130,8 +131,8 @@ plot_hist <- hist %>%
   ggplot(aes(year, value, color = experiment, group = paste(model, experiment, ensemble))) +
   geom_line() +
   labs(x = "Year",
-       y = "tas",
-       title = "CMIP6 runs - tas over time") +
+       y = "K",
+       title = "Global surface temperature") +
   facet_wrap(~model) +
   theme_minimal()
 
@@ -139,7 +140,7 @@ plot_ssps <- ssps %>%
   ggplot(aes(year, value, color = experiment, group = paste(model, experiment, ensemble))) +
   geom_line() +
   labs(x = "Year",
-       y = "tas",
-       title = "CMIP6 runs - tas over time") +
+       y = "K",
+       title = "Global surface temperature") +
   facet_wrap(~model) +
   theme_minimal()

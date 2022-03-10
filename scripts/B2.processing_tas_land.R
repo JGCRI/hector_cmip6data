@@ -136,8 +136,8 @@ all_models_compare <- plot_all_data %>%
   geom_line() +
   facet_wrap(~experiment, scales = "free") +
   labs(x = "Year",
-       y = "tas",
-       title = "CMIP6 runs - tas over time") +
+       y = "K",
+       title = "Surface temperature over land") +
   theme_minimal()
 
 # Plot just tas_land models
@@ -148,8 +148,8 @@ tas_land_plot <- tas %>%
   geom_line() +
   facet_wrap(~experiment, scales = "free") +
   labs(x = "Year",
-       y = "tas",
-       title = "CMIP6 runs - tas over time") +
+       y = "K",
+       title = "Surface temperature over land") +
   theme_minimal()
 
 # Clean up output data, save csv
@@ -158,4 +158,4 @@ output <- output %>%
   # Remove outliers
   filter(!model %in% low_models)
 
-write.csv(output, "./outputs/CMIP6_annual_tas_over_land.csv", row.names = FALSE)
+write.csv(output, "./outputs/CMIP6_annual_tas_land.csv", row.names = FALSE)
