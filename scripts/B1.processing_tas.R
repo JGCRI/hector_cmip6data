@@ -84,12 +84,10 @@ models <- historical$model
 Tgav <- tas %>%
   filter(model %in% models, !experiment == "historical") %>%
   left_join(historical, by = "model") %>%
-  mutate(value = value - avg,
-         variable = "Tgav",
-         units = "deg C")
+  mutate(Tgav = value - avg)
 
 # Join Tgav to original data set, but only for the rows/models that have historical data
-Tgav_out <- Tgav %>% select(rownum)
+Tgav_out <- Tgav %>% select(rownum, Tgav)
 
 output <- left_join(tas, Tgav_out, by = "rownum")
 output$type <- "global"
