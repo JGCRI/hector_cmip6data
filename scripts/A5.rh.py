@@ -1,15 +1,22 @@
-# Processing CMIP6 rh data using Pangeo
-# March 2022
-# Leeya Pressburger
+# ------------------------------------------------------------------------------
+# Program Name: A5.rh.py
+# Authors: Leeya Pressburger
+# Date Last Modified: March 2022
+# Program Purpose: Downloads CMIP6 `rh` data using Pangeo, calculates values over
+# land only, coarsens monthly data to an annual mean
+# Outputs: One csv file with annual co2 data for every specified CMIP6
+# model, experiment, and ensemble run saved as "model_experiment_ensemble.csv"
+# Output units are kg m-2 s-1 and will be converted to Pg/gridcell/yr in
+# B5.processing_rh.R
+# TODO:
+# ------------------------------------------------------------------------------
 
 # Import packages
 import fsspec
 import intake
-import numpy as np
 import pandas as pd
 import xarray as xr
 import session_info
-import cftime
 
 # Display all columns in dataframe
 pd.set_option('display.max_columns', None)
@@ -101,11 +108,7 @@ def get_land_rh(path):
     query2 = "variable_id == 'sftlf' & source_id == '" + meta_data.model[0] + "'"
 
     df_area = df.query(query1)
-    if df_area.shape[0] < 1:
-        raise RuntimeError("Could not find areacella for " + path)
     df_landper = df.query(query2)
-    if df_landper.shape[0] < 1:
-        raise RuntimeError("Could not find sftlf for " + path)
 
     # Read in the area cella file
     ds_area = xr.open_zarr(fsspec.get_mapper(df_area.zstore.values[0]), consolidated=True)
@@ -113,16 +116,14 @@ def get_land_rh(path):
 
     # Select only the land cell area values, use this mask as the area weights.
     mask = 1 * (ds_area['areacella'] * (0.01 * ds_landper['sftlf']))
-    # Replace 0 and 1 with NA
-    mask = xr.where(mask == 0, np.nan, mask)
-    masked_area = ds_area * mask
 
-    # Using the land cell area and total area calculate the weighted mean over the land.
-    total_area = masked_area.areacella.sum(set(masked_area.areacella.dims), skipna=True)
+    # Using the land cell area calculate the weighted mean over the land.
+    land_area = mask.values.sum()
     other_dims = set(ds.rh.dims) - {'time'}
 
     # Weighted average calculation
-    wa = (ds.rh * masked_area.areacella).sum(dim=other_dims) / total_area
+    wa = (ds.rh * mask).sum(dim=other_dims) / land_area
+    # Annual average
     wa = wa.coarsen(time=12, boundary="trim").mean()
 
     # Extract time information.
@@ -134,7 +135,7 @@ def get_land_rh(path):
     d = {'year': year, 'value': val}
     df = pd.DataFrame(data=d)
     out = combine_df(meta_data, df)
-    out['total_area'] = total_area.values
+    out['land_area'] = land_area
 
     name = out["model"][0] + "_" + out["experiment"][0] + "_" + out["ensemble"][0]
     # Save as csv
@@ -150,18 +151,15 @@ exps = ['1pctCO2', 'abrupt-4xCO2', 'abrupt-2xCO2', 'esm-hist', 'esm-ssp585', 'ss
 mips = ['CMIP', 'ScenarioMIP']
 
 # Access desired zstore addresses
+# Note that the removed model does not contain areacella or sftlf values and is therefore pulled out
 address_all = dat[(dat['variable_id'] == 'rh') & (dat['experiment_id'].isin(exps)) &
                    (dat['table_id'] == 'Lmon') & (dat['activity_id'].isin(mips)) &
                   (dat['source_id'] != 'BCC-CSM2-MR')].zstore
 
 address_all = address_all.reset_index(drop=True)
-address_test = address_test.reset_index(drop=True)
 
 # Loop
 for items in address_all:
     get_land_rh(items)
-
-# Note that units are in kg m2 s-1
-# BCC-CSM2-MR
 
 session_info.show()
