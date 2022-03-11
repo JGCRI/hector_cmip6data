@@ -79,3 +79,12 @@ rh_plot <- ggplot(rh, aes(year, value, color = model,
   labs(x = "Year",
        y = "Pg C",
        title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux")
+
+# Just historical data
+rh_hist <- rh %>% filter(experiment == "esm-hist") %>%
+  ggplot(aes(year, value, color = model, 
+                 group = paste0(model, experiment, ensemble))) +
+  geom_line() +
+  labs(x = "Year",
+       y = "Pg C",
+       title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux")
