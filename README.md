@@ -18,3 +18,6 @@ First, run `A4.heatflux_preprocessing.py` to isolate the Pangeo file locations f
 
 # Inputs
 All csv files that are required in R files can be found in `./inputs`. Files not generated within this repository are in the subdirectory, `./inputs/comp_data`.
+
+# A note on variable-specific functions within .py scripts
+Within the .py scripts, each variable has its own function, i.e. `get_rh`. There is a check within the function that if `areacella` or `sftlf` data is missing, the function will return an error. Models that failed consistently have been identified and removed from the list of zstore addresses within each file. However, be aware that some models may still fail and will need to be manually removed from the list of zstore addresses.
