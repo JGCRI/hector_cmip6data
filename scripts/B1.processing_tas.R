@@ -82,7 +82,7 @@ models <- historical$model
 
 # Filter and calculate
 Tgav <- tas %>%
-  filter(model %in% models, !experiment == "historical") %>%
+  filter(model %in% models) %>%
   left_join(historical, by = "model") %>%
   mutate(Tgav = value - avg)
 
@@ -93,11 +93,19 @@ output <- left_join(tas, Tgav_out, by = "rownum")
 output$type <- "global"
 
 # Clean up output data
-output <- output %>%
-  select(c(model, experiment, ensemble, variable, year, value, units, Tgav, type))
+out <- output %>%
+  select(c(model, experiment, ensemble, variable, year, value, units, type, Tgav))
+
+out_tgav <- out %>% 
+  select(-c(variable, value)) %>%
+  pivot_longer(cols = Tgav, names_to = "variable", values_to = "value")
+out_tgav$units <- "deg C"
+
+out <- out %>% select(-Tgav)
+out <- rbind(out, out_tgav)
 
 # Save outputs to csv
-write.csv(output, "./outputs/CMIP6_annual_tas_global.csv", row.names = FALSE)
+write.csv(out, "./outputs/CMIP6_annual_tas_global.csv", row.names = FALSE)
 
 # Data visualization
 # Plot results

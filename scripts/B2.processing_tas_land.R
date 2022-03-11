@@ -74,7 +74,7 @@ models <- historical$model
 
 # Filter and calculate
 Tgav_land <- tas %>%
-  filter(model %in% models, !experiment == "esm-hist") %>%
+  filter(model %in% models) %>%
   left_join(historical, by = "model") %>%
   mutate(Tgav = value - avg)
 
@@ -93,7 +93,7 @@ Tgav_land$type <- "land"
 Tgav_l_plot <- Tgav_land %>%
   select(c(year, value, model, experiment, ensemble, type))
 
-# Using Tgav from "processing_tas.R"
+# Using global data from "B1.processing_tas.R"
 Tgav <- read.csv("./outputs/cmip6_annual_tas_global.csv")
 Tgav_plot <- Tgav %>%
   select(year, value, model, experiment, ensemble, type)
@@ -153,9 +153,17 @@ tas_land_plot <- tas %>%
   theme_minimal()
 
 # Clean up output data, save csv
-output <- output %>%
-  select(c(model, experiment, ensemble, variable, year, value, units, Tgav, type)) %>%
+out <- output %>%
+  select(c(model, experiment, ensemble, variable, year, value, units, type, Tgav)) %>%
   # Remove outliers
   filter(!model %in% low_models)
 
-write.csv(output, "./outputs/CMIP6_annual_tas_land.csv", row.names = FALSE)
+out_tgav <- out %>% 
+  select(-c(variable, value)) %>%
+  pivot_longer(cols = Tgav, names_to = "variable", values_to = "value")
+out_tgav$units <- "deg C"
+
+out <- out %>% select(-Tgav)
+out <- rbind(out, out_tgav)
+
+write.csv(out, "./outputs/CMIP6_annual_tas_land.csv", row.names = FALSE)
