@@ -34,10 +34,14 @@ vars = ['rsds', 'rsus', 'rlds', 'rlus', 'hfss', 'hfls']
 exps = ['1pctCO2', 'abrupt-4xCO2', 'abrupt-2xCO2', 'esm-hist', 'esm-ssp585', 'ssp119',
         'ssp126', 'ssp245', 'ssp370', 'ssp434', 'ssp460', 'ssp585']
 mips = ['CMIP', 'ScenarioMIP']
+fails = ['BCC-CSM2-MR', 'AWI-CM-1-1-MR', 'NUIST/NESM3', 'NorESM2-LM', 
+'FGOALS-g3', 'FGOALS-f3-L', 'KACE-1-0-G', 'GISS-E2-2-G', 'CCCR-IITM', 
+'THU/CIESM', 'CAS-ESM2-0', 'FIO-ESM-2-0']
 
 # Pull info for variables and experiments of interest
 data = dat[(dat['variable_id'].isin(vars)) & (dat['experiment_id'].isin(exps)) &
-           (dat['table_id'] == 'Amon') & (dat['activity_id'].isin(mips))]]
+           (dat['table_id'] == 'Amon') & (dat['activity_id'].isin(mips)) &
+           (~dat['source_id'].isin(fails))]
 
 data = data.reset_index(drop = True)
 

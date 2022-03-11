@@ -104,7 +104,11 @@ def get_land_tas(path):
 
     # Based on the meta data find the correct areacella file
     query1 = "variable_id == 'areacella' & source_id == '" + meta_data.model[0] + "'"
+    if df_area.shape[0] < 1:
+        raise RuntimeError("Could not find areacella for " + path)
     query2 = "variable_id == 'sftlf' & source_id == '" + meta_data.model[0] + "'"
+    if df_landper.shape[0] < 1:
+        raise RuntimeError("Could not find sftlf for " + path)
 
     df_area = df.query(query1)
     if df_area.shape[0] < 1:
@@ -157,9 +161,15 @@ exps = ['1pctCO2', 'abrupt-4xCO2', 'abrupt-2xCO2', 'esm-hist', 'esm-ssp585', 'ss
 
 mips = ['CMIP', 'ScenarioMIP']
 
+fails = ["BCC-CSM2-MR", "AWI-CM-1-1-MR", "NUIST/NESM3", "MCM-UA-1-0",
+"NorESM2-LM", "FGOALS-g3", "FGOALS-f3-L", "KACE-1-0-G", "GISS-E2-2-G", 
+"IITM-ESM", "FIO-ESM-2-0", "THU/CIESM", "CCR-IITM", "IPSL-C5A2-INCA", 
+"ICON-ESM-LR", "KIOST-ESM"]
+
 # Access desired zstore addresses
 address_all = dat[(dat['variable_id'] == 'tas') & (dat['experiment_id'].isin(exps)) &
-                   (dat['table_id'] == 'Amon') & (dat['activity_id'].isin(mips))].zstore
+                   (dat['table_id'] == 'Amon') & (dat['activity_id'].isin(mips)) &
+                   (~dat['source_id'].isin(fails))].zstore
 
 address_all = address_all.reset_index(drop=True)
 
