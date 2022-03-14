@@ -157,7 +157,7 @@ dat = fetch_pangeo_table()
 
 # Pull out specifics
 exps = ['1pctCO2', 'abrupt-4xCO2', 'abrupt-2xCO2', 'esm-hist', 'esm-ssp585', 'ssp119',
-        'ssp126', 'ssp245', 'ssp370', 'ssp434', 'ssp460', 'ssp585']
+        'ssp126', 'ssp245', 'ssp370', 'ssp434', 'ssp460', 'ssp585', 'historical']
 
 mips = ['CMIP', 'ScenarioMIP']
 
@@ -174,7 +174,7 @@ address_all = dat[(dat['variable_id'] == 'tas') & (dat['experiment_id'].isin(exp
 address_all = address_all.reset_index(drop=True)
 
 # Loop
-for items in address_all[1857:1887]:
+for items in address_all:
     get_land_tas(items)
 
 session_info.show()
