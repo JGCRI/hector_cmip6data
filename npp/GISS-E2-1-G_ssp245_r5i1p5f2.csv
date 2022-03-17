@@ -1,0 +1,6 @@
+,variable,experiment,units,frequency,ensemble,model,year,value,land_area
+0,npp,ssp245,kg m-2 s-1,mon,r5i1p5f2,GISS-E2-1-G,2020,9.64311e-09,148979250000000.0
+1,npp,ssp245,kg m-2 s-1,mon,r5i1p5f2,GISS-E2-1-G,2021,9.895731e-09,148979250000000.0
+2,npp,ssp245,kg m-2 s-1,mon,r5i1p5f2,GISS-E2-1-G,2022,1.0013564e-08,148979250000000.0
+3,npp,ssp245,kg m-2 s-1,mon,r5i1p5f2,GISS-E2-1-G,2023,1.0069324e-08,148979250000000.0
+4,npp,ssp245,kg m-2 s-1,mon,r5i1p5f2,GISS-E2-1-G,2024,9.942603e-09,148979250000000.0

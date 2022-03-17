@@ -1,0 +1,16 @@
+,variable,experiment,units,frequency,ensemble,model,year,value,land_area
+0,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2000,4.4561735e-10,149451640000000.0
+1,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2001,4.346243e-10,149451640000000.0
+2,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2002,4.492806e-10,149451640000000.0
+3,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2003,4.3651774e-10,149451640000000.0
+4,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2004,4.604109e-10,149451640000000.0
+5,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2005,4.7455556e-10,149451640000000.0
+6,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2006,4.6889864e-10,149451640000000.0
+7,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2007,4.350108e-10,149451640000000.0
+8,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2008,4.4816495e-10,149451640000000.0
+9,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2009,4.6272022e-10,149451640000000.0
+10,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2010,4.9802185e-10,149451640000000.0
+11,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2011,4.7238974e-10,149451640000000.0
+12,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2012,4.6467452e-10,149451640000000.0
+13,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2013,4.6999254e-10,149451640000000.0
+14,npp,historical,kg m-2 s-1,mon,r1i1p1f1,CESM2-WACCM-FV2,2014,4.5985535e-10,149451640000000.0
