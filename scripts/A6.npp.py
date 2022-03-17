@@ -160,7 +160,7 @@ address_all = dat[(dat['variable_id'] == 'npp') & (dat['experiment_id'].isin(exp
 address_all = address_all.reset_index(drop=True)
 
 # Loop
-for items in address_all[878:890]:
+for items in address_all:
     get_land_npp(items)
 
 session_info.show()
