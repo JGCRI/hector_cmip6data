@@ -78,7 +78,8 @@ rh_plot <- ggplot(rh, aes(year, value, color = model,
   facet_wrap(~experiment, scales = "free") +
   labs(x = "Year",
        y = "Pg C",
-       title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux")
+       title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux") +
+  theme_minimal()
 
 # Just historical data
 rh_hist <- rh %>% filter(experiment == "esm-hist") %>%
@@ -87,4 +88,5 @@ rh_hist <- rh %>% filter(experiment == "esm-hist") %>%
   geom_line() +
   labs(x = "Year",
        y = "Pg C",
-       title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux")
+       title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux") +
+  theme_minimal()

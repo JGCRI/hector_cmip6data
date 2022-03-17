@@ -15,6 +15,7 @@ library(readr)
 library(dplyr)
 library(ggplot2)
 library(here)
+library(tidyr)
 
 # Set file paths, based on repo
 BASE_DIR <- here::here()
@@ -110,9 +111,10 @@ write.csv(out, "./outputs/CMIP6_annual_tas_global.csv", row.names = FALSE)
 # Data visualization
 # Plot results
 plot_t <- output %>% 
+  filter(variable == "tas") %>%
   ggplot(aes(year, value, color = model, group = paste(model, experiment, ensemble))) +
   geom_line() +
-  facet_wrap(~experiment, scales = "free_x") +
+  facet_wrap(~experiment, scales = "free") +
   labs(x = "Year",
        y = "K",
        title = "Global surface temperature") +

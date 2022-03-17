@@ -119,6 +119,7 @@ tas_l_plot <- tas %>%
 
 # Using Tgav from "processing_tas.R" (same as above)
 tas_plot <- Tgav %>%
+  filter(variable == "tas") %>%
   select(year, value, model, experiment, ensemble, type)
 
 plot_all_data <- bind_rows(tas_l_plot, tas_plot)

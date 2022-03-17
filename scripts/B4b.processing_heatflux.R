@@ -180,7 +180,8 @@ ggplot(mips, aes(year, value, color = cmip, group = model)) +
   geom_line() +
   labs(x = "Year",
        y = "W m-2",
-       title = "Ocean heat flux in CMIP5 vs CMIP6")
+       title = "Ocean heat flux in CMIP5 vs CMIP6") +
+  theme_minimal()
 
 # Plot ocean heat flux over time
 heat_flux %>%
@@ -189,4 +190,5 @@ heat_flux %>%
   facet_wrap(~experiment, scales = "free") +  
   labs(x = "Year",
        y = "W m-2",
-       title = "Ocean heat flux")
+       title = "Ocean heat flux") +
+  theme_minimal()
