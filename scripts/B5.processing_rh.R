@@ -57,7 +57,10 @@ rh <- rh %>% select(c(-new_year, -File.y, -X1))
 
 # Unit conversion
 # Convert kg/m2/s to Pg/gridcell/year
-values <- rh$value * (1e-12) * (3.15e7) * rh$land_area
+values <- rh$value * 
+  (1e-12) * # Pg/kg
+  (3.15e7) * # s/yr
+  rh$land_area # gridcell [m^2]
 
 rh <- rh %>%
   mutate(value = round(values, 4),

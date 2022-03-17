@@ -57,7 +57,10 @@ npp <- npp %>% select(c(-new_year, -File.y, -X1))
 
 # Unit conversion
 # Convert kg/m2/s to Pg/gridcell/year
-values <- npp$value * (1e-12) * (3.15e7) * npp$land_area
+values <- npp$value * 
+  (1e-12) * # Pg/kg
+  (3.15e7) * # s/yr
+  npp$land_area # gridcell [m^2]
 
 npp <- npp %>%
   mutate(value = round(values, 4),
