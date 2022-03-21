@@ -57,22 +57,23 @@ rh <- rh %>% select(c(-new_year, -File.y, -X1))
 
 # Unit conversion
 # Convert kg/m2/s to Pg/gridcell/year
-values <- rh$value * (1e-12) * (3.15e7) * rh$land_area
+values <- rh$value * 
+  (1e-12) * # Pg/kg
+  (3.15e7) * # s/yr
+  rh$land_area # gridcell [m^2]
 
 rh <- rh %>%
   mutate(value = round(values, 4),
          units = "Pg/yr") %>%
   filter(value > 0)
 
-
-# Clean up output data
-output <- rh %>%
-  select(c(model, experiment, ensemble, variable, year, value, units))
-
-# Save outputs to csv
-write.csv(output, "./outputs/CMIP6_annual_rh_land.csv", row.names = FALSE)
-
 # Data visualization
+# Remove abnormally low models
+rh_low <- filter(rh, value < 10)
+low_models <- unique(rh_low$model)
+rh <- rh %>% 
+  filter(!model %in% low_models)
+
 # Plot rh over time
 rh_plot <- ggplot(rh, aes(year, value, color = model, 
                group = paste0(model, experiment, ensemble))) +
@@ -80,7 +81,8 @@ rh_plot <- ggplot(rh, aes(year, value, color = model,
   facet_wrap(~experiment, scales = "free") +
   labs(x = "Year",
        y = "Pg C",
-       title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux")
+       title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux") +
+  theme_minimal()
 
 # Just historical data
 rh_hist <- rh %>% filter(experiment == "historical") %>%
@@ -90,3 +92,10 @@ rh_hist <- rh %>% filter(experiment == "historical") %>%
   labs(x = "Year",
        y = "Pg C",
        title = "Total Historical Heterotrophic Respiration on Land as Carbon Mass Flux")
+
+# Clean up output data
+output <- rh %>%
+  select(c(model, experiment, ensemble, variable, year, value, units))
+
+# Save outputs to csv
+write.csv(output, "./outputs/CMIP6_annual_rh_land.csv", row.names = FALSE)

@@ -175,18 +175,20 @@ cmip5 <- hc %>%
 mips <- rbind(cmip6, cmip5)
 
 # Plot
-ggplot(mips, aes(year, value, color = cmip, group = paste0(model, cmip))) +
+mips_plot <- ggplot(mips, aes(year, value, color = cmip, group = paste0(model, cmip))) +
   geom_line() +
   labs(x = "Year",
        y = "W m-2",
-       title = "Ocean heat flux in CMIP5 vs CMIP6")
+       title = "Ocean heat flux in CMIP5 vs CMIP6") +
+  theme_minimal()
 
 # Plot ocean heat flux over time
-heat_flux %>%
+hf_plot <-heat_flux %>%
   ggplot(aes(year, equation, color = model, 
              group = paste0(model, experiment, ensemble))) +
   geom_line() +
   facet_wrap(~experiment, scales = "free") +  
   labs(x = "Year",
        y = "W m-2",
-       title = "Ocean heat flux")
+       title = "Ocean heat flux") +
+  theme_minimal()

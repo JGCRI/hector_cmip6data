@@ -4,7 +4,7 @@
 # Date Last Modified: March 2022
 # Program Purpose: Downloads CMIP6 `rh` data using Pangeo, calculates values over
 # land only, coarsens monthly data to an annual mean
-# Outputs: One csv file with annual co2 data for every specified CMIP6
+# Outputs: One csv file with annual rh data for every specified CMIP6
 # model, experiment, and ensemble run saved as "model_experiment_ensemble.csv"
 # Output units are kg m-2 s-1 and will be converted to Pg/gridcell/yr in
 # B5.processing_rh.R
@@ -95,7 +95,7 @@ def get_land_rh(path):
 
     :param path:  str zstore path corresponding to a pangeo netcdf
 
-    :return:      pandas.core.frame.DataFrame of area-weighted land tas from a single netcdf file
+    :return:      pandas.core.frame.DataFrame of area-weighted land rh from a single netcdf file
     """
     ds = xr.open_zarr(fsspec.get_mapper(path), consolidated=True)
     df = pd.read_csv('https://storage.googleapis.com/cmip6/cmip6-zarr-consolidated-stores.csv')
