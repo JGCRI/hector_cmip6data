@@ -127,7 +127,7 @@ def get_rsds(path):
     df = pd.DataFrame(data=d)
     out = combine_df(meta_data, df)
 
-    name = out["model"][0] + "_" + out["ensemble"][0] + "_" + out["experiment"][0] + "_" + out["frequency"][0]
+    name = out["model"][0] + "_" + out["experiment"][0] + "_" + out["ensemble"][0] 
     # Save as csv
     out.to_csv("./rsds/" + name + ".csv", header=True, index=True)
 
