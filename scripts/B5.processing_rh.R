@@ -64,7 +64,8 @@ values <- rh$value *
 
 rh <- rh %>%
   mutate(value = round(values, 4),
-         units = "Pg/yr")
+         units = "Pg/yr") %>%
+  filter(value > 0)
 
 # Data visualization
 # Remove abnormally low models
@@ -82,6 +83,15 @@ rh_plot <- ggplot(rh, aes(year, value, color = model,
        y = "Pg C",
        title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux") +
   theme_minimal()
+
+# Just historical data
+rh_hist <- rh %>% filter(experiment == "historical") %>%
+  ggplot(aes(year, value, color = model, 
+                 group = paste0(model, experiment, ensemble))) +
+  geom_line() +
+  labs(x = "Year",
+       y = "Pg C",
+       title = "Total Historical Heterotrophic Respiration on Land as Carbon Mass Flux")
 
 # Clean up output data
 output <- rh %>%

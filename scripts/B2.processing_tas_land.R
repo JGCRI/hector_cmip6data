@@ -59,7 +59,7 @@ tas <- tas %>% select(c(-new_year, -File.y, -X1))
 
 # Get historical average
 hist <- tas %>%
-  filter(experiment == "esm-hist") %>%
+  filter(experiment == "historical") %>%
   group_by(model) %>%
   mutate(hist_av = mean(value))
 

@@ -1,0 +1,16 @@
+,variable,experiment,units,frequency,ensemble,model,year,value
+0,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2015,155.20108
+1,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2016,155.36423
+2,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2017,155.38145
+3,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2018,155.37775
+4,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2019,155.42157
+5,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2020,155.35506
+6,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2021,155.47588
+7,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2022,155.51727
+8,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2023,155.42464
+9,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2024,155.51312
+10,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2025,155.85419
+11,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2026,155.77264
+12,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2027,155.80061
+13,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2028,155.97752
+14,rlus,historical,W m-2,mon,r17i1p1f1,NorCPM1,2029,155.95134

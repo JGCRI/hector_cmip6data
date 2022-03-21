@@ -32,8 +32,10 @@ dat = fetch_pangeo_table()
 # Isolate heat flux variables
 vars = ['rsds', 'rsus', 'rlds', 'rlus', 'hfss', 'hfls']
 exps = ['1pctCO2', 'abrupt-4xCO2', 'abrupt-2xCO2', 'esm-hist', 'esm-ssp585', 'ssp119',
-        'ssp126', 'ssp245', 'ssp370', 'ssp434', 'ssp460', 'ssp585']
+        'ssp126', 'ssp245', 'ssp370', 'ssp434', 'ssp460', 'ssp585', 'historical']
+        
 mips = ['CMIP', 'ScenarioMIP']
+
 fails = ['BCC-CSM2-MR', 'AWI-CM-1-1-MR', 'NUIST/NESM3', 'NorESM2-LM', 
 'FGOALS-g3', 'FGOALS-f3-L', 'KACE-1-0-G', 'GISS-E2-2-G', 'CCCR-IITM', 
 'THU/CIESM', 'CAS-ESM2-0', 'FIO-ESM-2-0']

@@ -153,7 +153,7 @@ dat = fetch_pangeo_table()
 # Pull out specifics
 mips = ['CMIP', 'ScenarioMIP']
 exps = ['1pctCO2', 'abrupt-4xCO2', 'abrupt-2xCO2', 'esm-hist', 'esm-ssp585', 'ssp119',
-        'ssp126', 'ssp245', 'ssp370', 'ssp434', 'ssp460', 'ssp585']
+        'ssp126', 'ssp245', 'ssp370', 'ssp434', 'ssp460', 'ssp585', 'historical']
 
 # Get zstore addresses for desired files
 address_all = dat[(dat['variable']=='tas') & (dat['domain'] == 'Amon') &

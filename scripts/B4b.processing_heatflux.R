@@ -98,7 +98,6 @@ common_names <- left_join(common_names, rsus_names, by = "names")
 common_names <- drop_na(common_names)
 
 good_names <- common_names$names
-good_names <- good_names[-337]
 
 # Reorganize data frame
 data <- new_output %>%
@@ -144,7 +143,7 @@ for(n in seq_len(nrow(heat_flux))){
 
 # Combine list with data frame
 heat_flux <- heat_flux %>%
-  mutate(equation = as.numeric(as.character(hf_output)),
+  mutate(equation = parse_number(as.character(hf_output)),
          units = unique(data$units))
 
 # Save outputs to csv
@@ -161,7 +160,7 @@ hectorcal <- read.csv("./inputs/comp_data/CMIP5_heat_flux_final.csv")
 hc <- hectorcal %>% filter(experiment == "historical")
 
 hist <- heat_flux %>%
-  filter(experiment == "esm-hist") %>%
+  filter(experiment == "historical") %>%
   mutate(value = as.numeric(unlist(equation)))
 
 # Select relevant columns, create one dataset
@@ -176,7 +175,7 @@ cmip5 <- hc %>%
 mips <- rbind(cmip6, cmip5)
 
 # Plot
-mips_plot <- ggplot(mips, aes(year, value, color = cmip, group = model)) +
+mips_plot <- ggplot(mips, aes(year, value, color = cmip, group = paste0(model, cmip))) +
   geom_line() +
   labs(x = "Year",
        y = "W m-2",
@@ -184,8 +183,9 @@ mips_plot <- ggplot(mips, aes(year, value, color = cmip, group = model)) +
   theme_minimal()
 
 # Plot ocean heat flux over time
-hf_plot <- heat_flux %>%
-  ggplot(aes(year, equation, color = model, group = paste0(model, experiment, ensemble))) +
+hf_plot <-heat_flux %>%
+  ggplot(aes(year, equation, color = model, 
+             group = paste0(model, experiment, ensemble))) +
   geom_line() +
   facet_wrap(~experiment, scales = "free") +  
   labs(x = "Year",
