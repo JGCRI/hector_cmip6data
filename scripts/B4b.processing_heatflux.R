@@ -175,7 +175,7 @@ cmip5 <- hc %>%
 mips <- rbind(cmip6, cmip5)
 
 # Plot
-ggplot(mips, aes(year, value, color = cmip, group = model)) +
+ggplot(mips, aes(year, value, color = cmip, group = paste0(model, cmip))) +
   geom_line() +
   labs(x = "Year",
        y = "W m-2",
