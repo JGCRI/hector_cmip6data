@@ -61,7 +61,9 @@ values <- rh$value * (1e-12) * (3.15e7) * rh$land_area
 
 rh <- rh %>%
   mutate(value = round(values, 4),
-         units = "Pg/yr")
+         units = "Pg/yr") %>%
+  filter(value > 0)
+
 
 # Clean up output data
 output <- rh %>%
@@ -81,10 +83,10 @@ rh_plot <- ggplot(rh, aes(year, value, color = model,
        title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux")
 
 # Just historical data
-rh_hist <- rh %>% filter(experiment == "esm-hist") %>%
+rh_hist <- rh %>% filter(experiment == "historical") %>%
   ggplot(aes(year, value, color = model, 
                  group = paste0(model, experiment, ensemble))) +
   geom_line() +
   labs(x = "Year",
        y = "Pg C",
-       title = "Total Heterotrophic Respiration on Land as Carbon Mass Flux")
+       title = "Total Historical Heterotrophic Respiration on Land as Carbon Mass Flux")
