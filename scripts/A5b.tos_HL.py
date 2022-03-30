@@ -17,8 +17,14 @@ import pandas as pd
 import os as os
 import numpy as np
 
+# Set up the base directory
+BASEDIR = os.getcwd()
 
-# 1. Define functions
+if not BASEDIR.endswith("hector_cmip6data"):
+    raise TypeError(f'BASEDIR should be the root hector_cmip6data repository')
+
+
+# 1. Define functions ----------------------------------------------------------------------------------
 def get_ds_meta(ds):
     """ Get the meta data information from the xarray data set.
 
@@ -137,7 +143,7 @@ def mean_HL_tos(path):
     return (out)
 
 
-# 2. Process area-weighted tos for the HL region.
+# 2. Process area-weighted tos for the HL region. ----------------------------------------------------------------------------------
 
 ## The url path that contains to the pangeo archive table of contents.
 url = "https://storage.googleapis.com/cmip6/pangeo-cmip6.json"
@@ -156,15 +162,15 @@ query = dict(
 catalog = catalog.search(require_all_on=["source_id"], **query)
 catalog = catalog.df.copy().reset_index(drop=True)
 catalog = catalog.loc[catalog['member_id'].str.contains('p1')].copy().reset_index(drop=True)
-catalog.to_csv("catalog.csv")
+catalog.to_csv(BASEDIR + "/tos/tos_HL_catalog.csv")
 
 # Set up the output directory and process the files.
-outdir = '../tos/HL/'
+outdir = BASEDIR + '/tos/HL/'
 if not os.path.exists(outdir):
     os.mkdir(outdir)
 
 # Process the files
-for file in catalog["zstore"][range(242, 501)]:
+for file in catalog["zstore"]:
     print(file)
     try:
         ofile = outdir + file.replace("/", "_") + '.csv'

@@ -1,6 +1,12 @@
-# After running the pangeo code scripts 0.global_tos.py, 0.HL_tos.py, and 0.LL_tos.py to get
-# the mean tos for global, HL, and LL regions from the netcdf files stored on pangeo. This script formats the
-# data to an intermediate data product that is saved on github. 
+# ------------------------------------------------------------------------------
+# Program Name: B5b.process_historical_regional_tos.R
+# Authors: Kalyn Dorheim
+# Date Last Modified: March 2022
+# Program Purpose: Post-processing of global & regional tos data, converts from absolute
+# temperature to temperature anomaly and general clean up.
+# Outputs: A single long data frame stored as csv file in the output directory that is to be used
+# in C5b.ocean_component-tos_data.Rmd which prepares the data for the Hector ocean component.
+# TODO:
 
 # Load library
 library(assertthat)

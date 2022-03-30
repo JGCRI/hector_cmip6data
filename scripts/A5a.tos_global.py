@@ -8,12 +8,18 @@
 # the B5 script level.
 # TODO:
 # ------------------------------------------------------------------------------
-# 0. Load packages
+# 0. Load packages, define functions, & set up script.
 import fsspec
 import intake  # must be v 0.6.2
 import xarray as xr
 import pandas as pd
 import os as os
+
+# Set up the base directory
+BASEDIR = os.getcwd()
+
+if not BASEDIR.endswith("hector_cmip6data"):
+    raise TypeError(f'BASEDIR should be the root hector_cmip6data repository')
 
 # An example of how to get the weighted area
 #https://nordicesmhub.github.io/NEGI-Abisko-2019/training/Example_model_global_arctic_average.html
@@ -23,7 +29,7 @@ url = "https://storage.googleapis.com/cmip6/pangeo-cmip6.json"
 catalog = intake.open_esm_datastore(url)
 
 # Set the parameters of our serach, we need the tos and the ocean cell area.
-expts = ["historical"] #["ssp119", "ssp126", "ssp245", "ssp370", "ssp434", "ssp460", "ssp534-over", "ssp585"]
+expts = ["historical", "ssp119", "ssp126", "ssp245", "ssp370", "ssp434", "ssp460", "ssp534-over", "ssp585"]
 cmip_vars = ["tos"]
 query = dict(
     experiment_id=expts,
@@ -150,15 +156,17 @@ def global_mean(path):
 
     return (out)
 
-# Set up the output directory and process the files.
-outdir = './tos/global/'
+# ------------------------------------------------------------------------------
+# 1. Run code!
+
+outdir = BASEDIR + '/tos/global/'
 
 if not os.path.exists(outdir):
     os.mkdir(outdir)
 
-catalog.to_csv("./catalog_historical.csv")
+catalog.to_csv(BASEDIR + "/tos/tos_historical_catalog.csv")
 # Process the files
-for file in catalog["zstore"][range(242, 501)]:
+for file in catalog["zstore"]:
     try:
         print(file)
         ofile = outdir + file.replace("/", "_") + '.csv'

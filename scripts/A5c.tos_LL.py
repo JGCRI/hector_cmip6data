@@ -17,7 +17,13 @@ import os as os
 import pandas as pd
 import numpy as np
 
+# Set up the base directory
+BASEDIR = os.getcwd()
 
+if not BASEDIR.endswith("hector_cmip6data"):
+    raise TypeError(f'BASEDIR should be the root hector_cmip6data repository')
+
+# ------------------------------------------------------------------------------
 # 1. Define functions
 def get_ds_meta(ds):
     """ Get the meta data information from the xarray data set.
@@ -138,6 +144,7 @@ def mean_LL_tos(path):
     return (out)
 
 
+# ------------------------------------------------------------------------------
 # 2. Process area-weighted tos for the HL region.
 
 ## The url path that contains to the pangeo archive table of contents.
@@ -154,14 +161,15 @@ query = dict(
     table_id = "Omon"
 )
 
-# Process the files -------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# 3. Process the files
 catalog = catalog.search(require_all_on=["source_id"], **query)
 catalog = catalog.df.copy().reset_index(drop=True)
 catalog = catalog.loc[catalog['member_id'].str.contains('p1')].copy().reset_index(drop=True)
-catalog.to_csv("catalog_LL.csv")
+catalog.to_csv(BASEDIR + "/tos/catalog_tos_LL.csv")
 
 # Set up the output directory and process the files.
-outdir = '../tos/LL/'
+outdir = BASEDIR + '/tos/LL/'
 if not os.path.exists(outdir):
     os.mkdir(outdir)
 

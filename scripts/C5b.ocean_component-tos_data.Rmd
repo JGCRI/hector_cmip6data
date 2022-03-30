@@ -24,7 +24,7 @@ library(ggplot2)
 DIR <- here::here("tos")
 
 dfile <- file.path(DIR, "historical_HL_LL_global_tos.csv")
-if (!file.exists(dfile)){ stop("missing ", dfile, " must run 1.postprocessing.R")}
+if (!file.exists(dfile)){ stop("missing ", dfile, " must run A5a, A5b, A5c, & B5b scripts first")}
 
 data <- read.csv(dfile, stringsAsFactors = FALSE)
 
