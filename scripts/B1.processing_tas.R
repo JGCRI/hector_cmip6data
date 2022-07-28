@@ -68,7 +68,7 @@ tas$year <- replace_year
 tas <- tas %>% select(c(-new_year, -File.y, -X1))
 
 # Get historical decadal average from 1850-1860 to use as a reference point
-histo <- tas %>%
+hist <- tas %>%
   filter(experiment == "historical") %>%
   group_by(model, ensemble) %>%
   filter(year %in% 1850:1860) %>%
