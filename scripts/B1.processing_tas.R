@@ -67,16 +67,17 @@ tas$year <- replace_year
 # Get rid of unnecessary columns
 tas <- tas %>% select(c(-new_year, -File.y, -X1))
 
-# Get historical average
-histo <- tas %>%
+# Get historical decadal average from 1850-1860 to use as a reference point
+hist <- tas %>%
   filter(experiment == "historical") %>%
-  group_by(model) %>%
+  group_by(model, ensemble) %>%
+  filter(year %in% 1850:1860) %>%
   mutate(hist_av = mean(value))
 
 # Isolate historical models and calculate their averages
-historical <- as.data.frame(unique(histo$model))
-historical$avg <- unique(histo$hist_av)
-colnames(historical) <- c("model", "avg")
+historical <- histo %>% 
+  select(model, ensemble, avg = hist_av) %>% 
+  distinct()
 
 # What models have Tgav values
 models <- historical$model
@@ -84,7 +85,7 @@ models <- historical$model
 # Filter and calculate
 Tgav <- tas %>%
   filter(model %in% models) %>%
-  left_join(historical, by = "model") %>%
+  left_join(historical, by = c("model", "ensemble")) %>%
   mutate(Tgav = value - avg)
 
 # Join Tgav to original data set, but only for the rows/models that have historical data
