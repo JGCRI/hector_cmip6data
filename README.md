@@ -1,3 +1,5 @@
+<a href="https://zenodo.org/badge/latestdoi/444565041"><img src="https://zenodo.org/badge/444565041.svg" alt="DOI"></a>
+
 # hector_cmip6data
 This repository contains CMIP6 data relevant for Hector v3 calibration.
 
