@@ -65,17 +65,19 @@ replace_year <- ifelse(is.na(tas$new_year),
 tas$year <- replace_year
 
 # Get rid of unnecessary columns
-tas <- tas %>% select(c(-new_year, -File.y, -X1))
+tas %>% 
+  select(variable, experiment, ensemble, frequency, model, year, value, name, rownum, units) -> 
+  tas
 
-# Get historical decadal average from 1850-1860 to use as a reference point
+# Get reference period mean to normalize the data by.
 hist <- tas %>%
   filter(experiment == "historical") %>%
   group_by(model, ensemble) %>%
-  filter(year %in% 1850:1860) %>%
+  filter(year %in% 1850:1900) %>%
   mutate(hist_av = mean(value))
 
 # Isolate historical models and calculate their averages
-historical <- histo %>% 
+historical <- hist %>% 
   select(model, ensemble, avg = hist_av) %>% 
   distinct()
 
@@ -104,7 +106,7 @@ out_tgav <- out %>%
 out_tgav$units <- "deg C"
 
 out <- out %>% select(-Tgav)
-out <- rbind(out, out_tgav)
+out <- bind_rows(out, out_tgav)
 
 # Save outputs to csv
 write.csv(out, "./outputs/CMIP6_annual_tas_global.csv", row.names = FALSE)

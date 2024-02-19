@@ -55,13 +55,13 @@ replace_year <- ifelse(is.na(tas$new_year),
 tas$year <- replace_year
 
 # Get rid of unnecessary columns
-tas <- tas %>% select(c(-new_year, -File.y, -X1))
+tas <- tas %>% select(c(-new_year, -File.y, -`...1`))
 
 # Get historical decadal average from 1850-1860 to use as a reference point
 hist <- tas %>%
   filter(experiment == "historical") %>%
   group_by(model, ensemble) %>%
-  filter(year %in% 1850:1860) %>%
+  filter(year %in% 1850:1900) %>%
   mutate(hist_av = mean(value))
 
 # Isolate historical models and calculate their averages

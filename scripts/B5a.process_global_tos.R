@@ -65,7 +65,7 @@ global_data %>%
 # Calculate the average temperature for the reference period (1850 to 1860) for each model / ensemble to be used 
 # to convert from absolute temperature to temperature anomoly. 
 tos_data %>%  
-  filter(year %in% 1850:1860) %>% 
+  filter(year %in% 1850:1900) %>% 
   group_by(model, ensemble) %>% 
   summarise(ref_value = mean(value)) %>% 
   ungroup() -> 
